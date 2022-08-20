@@ -4,15 +4,17 @@ function onInit()
 end
 
 function getRollNew(rActor,nTargetDC, bSecretRoll)
-    sOptSurpriseDie = OptionsManager.getOption("surpriseDie");
+    --sOptSurpriseDie = OptionsManager.getOption("surpriseDie");
 
-    if sOptSurpriseDie == "d6" then
-        DataCommonADND.aDefaultSurpriseDice = {"d6"};
-    elseif sOptSurpriseDie == "d10" then
-        DataCommonADND.aDefaultSurpriseDice = {"d10"};
-    elseif sOptSurpriseDie == "d12" then
-        DataCommonADND.aDefaultSurpriseDice = {"d12"};
-    end
+    -- if sOptSurpriseDie == "d6" then
+    --     DataCommonADND.aDefaultSurpriseDice = {"d6"};
+    -- elseif sOptSurpriseDie == "d10" then
+    --     DataCommonADND.aDefaultSurpriseDice = {"d10"};
+    -- elseif sOptSurpriseDie == "d12" then
+    --     DataCommonADND.aDefaultSurpriseDice = {"d12"};
+    -- end
+    
+    DataCommonADND.aDefaultSurpriseDice = {"d6"};
     
     local rRoll = {};
     rRoll.sType = "surprise";

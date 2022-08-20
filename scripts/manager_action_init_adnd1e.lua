@@ -16,13 +16,13 @@ end
 function getRollNew(rActor, bSecretRoll, rItem)
     local rRoll;
 
-    if OptionsManager.getOption("initiativeModifiersAllow") == "on" then
-        -- default, with modifiers
-        rRoll = getRollOrig(rActor, bSecretRoll, rItem);
-    else
+    -- if OptionsManager.getOption("initiativeModifiersAllow") == "on" then
+    --     -- default, with modifiers
+    --     rRoll = getRollOrig(rActor, bSecretRoll, rItem);
+    -- else
         -- no initiative modifiers
         rRoll = getRollNoMods(rActor, bSecretRoll, rItem);
-    end
+    --end
 
     return rRoll;
 end
@@ -33,6 +33,9 @@ function getRollNoMods(rActor, bSecretRoll, rItem)
     
     rRoll.sType = "init";
     rRoll.aDice = { "d" .. DataCommonADND.nDefaultInitiativeDice };
+
+    -- Decide how to get init mod from rActor for at least zombies in OSRIC
+    
     rRoll.nMod = 0;
     rRoll.sDesc = "[INIT]";
     rRoll.bSecret = bSecretRoll;
@@ -45,13 +48,13 @@ function handleApplyInitNew(msgOOB)
     local nTotal = tonumber(msgOOB.nTotal) or 0;
 
     local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
-    local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
-    local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
+    --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
+    --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
     local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeGroupingSwap") == 'on');
 
     -- grouped initiative options
-    if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
-        if (bOptPCVNPCINIT or sOptInitGrouping == "both") then
+    --if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
+        if bOptPCVNPCINIT then --or sOptInitGrouping == "both") then
             if ActorManager.isPC(rSource) then
                 CombatManagerADND1e.applyInitResultToAllPCs(nTotal);
                 PC_LASTINIT = nTotal;
@@ -59,27 +62,27 @@ function handleApplyInitNew(msgOOB)
                 CombatManagerADND1e.applyInitResultToAllNPCs(nTotal);
                 NPC_LASTINIT = nTotal;
             end
-        elseif (sOptInitGrouping == "pc") then
-            if ActorManager.isPC(rSource) then
-                CombatManagerADND1e.applyInitResultToAllPCs(nTotal);
-                PC_LASTINIT = nTotal;
-            elseif not ActorManager.isPC(rSource) then
-                CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
-                NPC_LASTINIT = nTotal;
-            end
-        elseif (sOptInitGrouping == "npc") then
-            if not ActorManager.isPC(rSource) then
-                CombatManagerADND1e.applyInitResultToAllNPCs(nTotal);
-                NPC_LASTINIT = nTotal;
-            elseif ActorManager.isPC(rSource) then
-                CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
-                PC_LASTINIT = nTotal;
-            end
+        -- elseif (sOptInitGrouping == "pc") then
+        --     if ActorManager.isPC(rSource) then
+        --         CombatManagerADND1e.applyInitResultToAllPCs(nTotal);
+        --         PC_LASTINIT = nTotal;
+        --     elseif not ActorManager.isPC(rSource) then
+        --         CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
+        --         NPC_LASTINIT = nTotal;
+        --     end
+        -- elseif (sOptInitGrouping == "npc") then
+        --     if not ActorManager.isPC(rSource) then
+        --         CombatManagerADND1e.applyInitResultToAllNPCs(nTotal);
+        --         NPC_LASTINIT = nTotal;
+        --     elseif ActorManager.isPC(rSource) then
+        --         CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
+        --         PC_LASTINIT = nTotal;
+        --     end
         end
-    else
+    --else
         -- no group options set
         CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
-    end
+--end
 
     -- if ties are turned off
     -- if not bOptInitTies then
@@ -158,9 +161,9 @@ function handleApplyInitNew(msgOOB)
 
     -- init grouping swap
     if bOptInitGroupingSwap then
-        if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
+        --if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
             CombatManagerADND1e.applyInitResultToAllPCs(NPC_LASTINIT);
             CombatManagerADND1e.applyInitResultToAllNPCs(PC_LASTINIT);
-        end
+        --end
     end
 end

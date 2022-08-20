@@ -18,16 +18,17 @@
     </ruleset>
   </properties>
 
-  <announcement text="AD&amp;D 1E Properties v1.4, AD&amp;D 2E version.\r--by Celestian 2017-2021\renhanced by Doomsword" font="emotefont" icon="rulesetlogo_DungeonClassic" />
+  <announcement text="AD&amp;D 1E Properties v1.4, AD&amp;D 2E version.\r--by Celestian 2017-2021\renhanced by Doomsword 2022" font="emotefont" icon="rulesetlogo_DungeonClassic" />
   <base>    
     <!-- High-level scripts -->
     <script name="DataCommonADND1e" file="scripts/data_common_adnd1e.lua" />
-    <script name="ActionInitADND1e" file="scripts/manager_action_init_adnd1e.lua" />
-    <script name="ActionSurpriseADND1e" file="scripts/manager_action_surprise_adnd1e.lua" />
+    <script name="ActionInitManagerADND1e" file="scripts/manager_action_init_adnd1e.lua" />
+    <script name="ActionSurpriseManagerADND1e" file="scripts/manager_action_surprise_adnd1e.lua" />
     <script name="ADND1eManager" file="scripts/manager_adnd1e.lua" />
     <script name="CombatManagerADND1e" file="scripts/manager_combat_adnd1e.lua" />
     <script name="FightsSavesAsManager" file="scripts/manager_fights_saves_as.lua" />
     <script name="NpcClickChooser" file="campaign/scripts/npc_click_chooser.lua" />
+
   </base>
     
 </root>

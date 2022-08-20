@@ -8,10 +8,10 @@ NPC_LASTINIT = 0;
 OOB_MSGTYPE_CHANGEINIT = "changeinitiative";
 
 function onInit()
-    local initiativeDie = OptionsManager.getOption("initiativeDie");
-    local initiativeDieNumber = initiativeDie:gsub("d", "");
+    -- local initiativeDie = OptionsManager.getOption("initiativeDie");
+    -- local initiativeDieNumber = initiativeDie:gsub("d", "");
 
-    DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber;
+    -- DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber;
 
     rollEntryInitOrig = CombatManagerADND.rollEntryInit;
     CombatManagerADND.rollEntryInit = rollEntryInitNew;
@@ -45,8 +45,8 @@ end
 -- this needs to be examined in full, due to any option changes
 function rollEntryInitNew(nodeEntry)
     local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
-    local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
-    local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
+    --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
+    --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
     local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeGroupingSwap") == 'on');
 
 	if not nodeEntry then
@@ -86,7 +86,7 @@ function rollEntryInitNew(nodeEntry)
         end
 
         -- if grouping involving pcs is on
-        if bOptPCVNPCINIT or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
+        if bOptPCVNPCINIT then --or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
             -- roll without mods
             nInitResult = rollRandomInitOrig(0, bADV);
             -- group init - apply init result to remaining PCs
@@ -104,7 +104,7 @@ function rollEntryInitNew(nodeEntry)
     else
         -- it's an npc
         -- if grouping involving npcs is on
-        if bOptPCVNPCINIT or (sOptInitGrouping == "npc" or sOptInitGrouping == "both") then
+        if bOptPCVNPCINIT then --or (sOptInitGrouping == "npc" or sOptInitGrouping == "both") then
             -- roll without mods
             nInitResult = rollRandomInitOrig(0, bADV);
             -- group init - apply init result to remaining NPCs
@@ -113,6 +113,7 @@ function rollEntryInitNew(nodeEntry)
             NPC_LASTINIT = nInitResult;
         else
             -- set nInit to 0 for disallowing mods
+            --consider for OSRIC zombies
             local nInit = 0;
             -- for npcs we allow them to have custom initiative. Check for it 
             -- and set nInit.
@@ -199,34 +200,34 @@ function rollEntryInitNew(nodeEntry)
     end
 
     -- deal with ties when all initiative is grouped and ties are turned off
-    if bOptPCVNPCINIT or (sOptInitGrouping == "both") then
+    --if bOptPCVNPCINIT or (sOptInitGrouping == "both") then
         
         -- init ties off
-        if not bOptInitTies then
-            -- this is to make sure we dont have same initiative
-            -- give the benefit to players.
-            if PC_LASTINIT == NPC_LASTINIT then
-                -- don't want 0 inits
-                if NPC_LASTINIT ~= 1 then
-                    nInitResult = NPC_LASTINIT - 1;
-                    applyInitResultToAllPCs(nInitResult);
-                    PC_LASTINIT = nInitResult;
-                else
-                    nInitResult = PC_LASTINIT + 1;
-                    applyInitResultToAllNPCs(nInitResult);
-                    NPC_LASTINIT = nInitResult;
-                end
-            end
-        end
+        -- if not bOptInitTies then
+        --     -- this is to make sure we dont have same initiative
+        --     -- give the benefit to players.
+        --     if PC_LASTINIT == NPC_LASTINIT then
+        --         -- don't want 0 inits
+        --         if NPC_LASTINIT ~= 1 then
+        --             nInitResult = NPC_LASTINIT - 1;
+        --             applyInitResultToAllPCs(nInitResult);
+        --             PC_LASTINIT = nInitResult;
+        --         else
+        --             nInitResult = PC_LASTINIT + 1;
+        --             applyInitResultToAllNPCs(nInitResult);
+        --             NPC_LASTINIT = nInitResult;
+        --         end
+        --     end
+        -- end
 
         -- init grouping swap
         if bOptInitGroupingSwap then
-            if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
+            --if bOptPCVNPCINIT then --or (sOptInitGrouping ~= "neither") then
                 applyInitResultToAllPCs(NPC_LASTINIT);
                 applyInitResultToAllNPCs(PC_LASTINIT);
-            end
+            --end
         end
-    end
+    --end
 end
 
 function applyInitResultToAllPCs(nInitResult)
@@ -339,38 +340,38 @@ end
 --     end
 -- end
 
--- function handleInitiativeChange(msgOOB)
---     local nodeCT = DB.findNode(msgOOB.sCTRecord);
+function handleInitiativeChange(msgOOB)
+    local nodeCT = DB.findNode(msgOOB.sCTRecord);
 
---     if nodeCT then
---         DB.setValue(nodeCT,"initresult","number",msgOOB.nNewInit);
---         DB.setValue(nodeCT,"initresult_d6","number",msgOOB.nNewInit);
---     end
--- end
+    if nodeCT then
+        DB.setValue(nodeCT,"initresult","number",msgOOB.nNewInit);
+        DB.setValue(nodeCT,"initresult_d6","number",msgOOB.nNewInit);
+    end
+end
 
--- function resetInitNew()
---     -- set last init results to 0
---     PC_LASTINIT = 0;
---     NPC_LASTINIT = 0;
+function resetInitNew()
+    -- set last init results to 0
+    PC_LASTINIT = 0;
+    NPC_LASTINIT = 0;
 
---     for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
---         resetCombatantInit(nodeCT);
---     end
+    for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
+        resetCombatantInit(nodeCT);
+    end
 
--- end
+end
 
--- function onRoundStartNew(nCurrent)
---     local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
+function onRoundStartNew(nCurrent)
+    local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
 
---     PC_LASTINIT = 0;
---     NPC_LASTINIT = 0;
+    PC_LASTINIT = 0;
+    NPC_LASTINIT = 0;
     
---     if bOptRoundStartResetInit then
---         for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
---             resetCombatantInit(nodeCT);
---         end
---     end
--- end
+    if bOptRoundStartResetInit then
+        for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
+            resetCombatantInit(nodeCT);
+        end
+    end
+end
 
 --decide what to do with this
 function resetCombatantInit(nodeCT)
@@ -386,12 +387,12 @@ end
 
 -- return the Best ac hit from a roll for this NPC
 function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
-    Debug.console(nodeCT, sHitDice, aMatrixRolls);
+    --Debug.console(nodeCT, sHitDice, aMatrixRolls);
 
     local sClass, nodePath = DB.getValue(nodeCT,"sourcelink");
     local nodeNPC = DB.findNode(nodePath);
-    Debug.console("394", sClass, nodeNPC);
-    Debug.console("395", rActor, nodeNPC, sHitDice, aMatrixRolls);
+    --Debug.console("394", sClass, nodeNPC);
+    --Debug.console("395", rActor, nodeNPC, sHitDice, aMatrixRolls);
 
     
     local nACHit = 20;
@@ -413,7 +414,7 @@ function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
       fightsAsClass = string.gsub(fightsAsClass, "%s+", "");
       fightsAsHdLevel = DB.getValue(nodeNPC, "fights_as_hd_level");
 
-      Debug.console("111", "npcHitDice", sHitDice, "fightsAsClass", fightsAsClass, "fightsAsHdLevel", fightsAsHdLevel);
+      --Debug.console("111", "npcHitDice", sHitDice, "fightsAsClass", fightsAsClass, "fightsAsHdLevel", fightsAsHdLevel);
     
       -- fights_as_hd_level not set
       if (fightsAsHdLevel == nil or fightsAsHdLevel == 0) then
@@ -441,8 +442,8 @@ function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
           end
       end
 
-      Debug.console("121", "fightsAsClass", fightsAsClass);
-      Debug.console("122", "fightsAsHdLevel", fightsAsHdLevel, "sHitDice", sHitDice);
+      --Debug.console("121", "fightsAsClass", fightsAsClass);
+      --Debug.console("122", "fightsAsHdLevel", fightsAsHdLevel, "sHitDice", sHitDice);
 
       if (fightsAsClass ~= "") then
         if (fightsAsClass == "Assassin") then
@@ -515,7 +516,7 @@ function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
         end
 
         local bUseOsricMonsterMatrix = (OptionsManager.getOption("useOsricMonsterMatrix") == 'on');
-        Debug.console("514", "fightsAsHdLevel", fightsAsHdLevel, "bUseOsricMonsterMatrix", bUseOsricMonsterMatrix);
+        --Debug.console("514", "fightsAsHdLevel", fightsAsHdLevel, "bUseOsricMonsterMatrix", bUseOsricMonsterMatrix);
         
         if bUseOsricMonsterMatrix then
             aMatrixRolls = DataCommonADND.aOsricToHitMatrix[fightsAsHdLevel];
@@ -530,7 +531,7 @@ function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
         end
     end
 
-    Debug.console("manager_combat_adnd_op_hr","getACHitFromMatrixForNPCNew","aMatrixRolls",aMatrixRolls);
+    --Debug.console("manager_combat_adnd_op_hr","getACHitFromMatrixForNPCNew","aMatrixRolls",aMatrixRolls);
     local nACBase = 11;
       
     if (DataCommonADND.coreVersion == "becmi") then 
@@ -544,22 +545,22 @@ function getACHitFromMatrixForNPCNew(nodeCT,nRoll)
 
         -- get value from db, in case it's been explicitly set
         local nTHACDb = DB.getValue(nodeNPC, "thac" .. i);
-        Debug.console("char_matrix_thaco:151", "nTHACDb", nTHACDb);
+        --Debug.console("char_matrix_thaco:151", "nTHACDb", nTHACDb);
 
         -- get value from aMatrixRolls
         local nTHACM = aMatrixRolls[math.abs(i - nTotalACs)];
-        Debug.console("char_matrix_thaco:155", "nTHACM", nTHACM);
+        --Debug.console("char_matrix_thaco:155", "nTHACM", nTHACM);
 
         if (fightsAsClass ~= "" or (fightsAsHdLevel ~= 0 and fightsAsHdLevel ~= tonumber(sHitDice))) then
-            Debug.console("119", fightsAsClass, fightsAsHdLevel, tonumber(sHitDice));
+            --Debug.console("119", fightsAsClass, fightsAsHdLevel, tonumber(sHitDice));
             sCurrentTHAC = nTHACM;
-            Debug.console("char_matrix_thaco:173", "nTHAC", nTHAC);
+            --Debug.console("char_matrix_thaco:173", "nTHAC", nTHAC);
         elseif (nTHACDb ~= nil and nTHACDb ~= nTHACM) then
             sCurrentTHAC = nTHACDb;
-            Debug.console("char_matrix_thaco:176", "nTHAC", nTHAC);
+            --Debug.console("char_matrix_thaco:176", "nTHAC", nTHAC);
         else
             sCurrentTHAC = nTHACM;
-            Debug.console("char_matrix_thaco:179", "nTHAC", nTHAC);
+            --Debug.console("char_matrix_thaco:179", "nTHAC", nTHAC);
         end
 
         if nRoll >= nCurrentTHAC then
