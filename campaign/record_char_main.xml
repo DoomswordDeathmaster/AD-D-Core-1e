@@ -6,12 +6,8 @@
       <stringu name="background" merge="replace">
         <script>
           function onInit()
-            setVisible(true);
-            window.backgroundlink.setVisible(true);
-            if OptionsManager.getOption("use2eKits") == "off" then
-              setVisible(false);
-              window.backgroundlink.setVisible(false);
-            end
+            setVisible(false);
+            window.backgroundlink.setVisible(false);
           end
         </script>
         <anchored to="race" position="right" relation="relative" offset="30,0" width="80" />
@@ -21,10 +17,7 @@
         <script>
           function onInit()
             super.onInit();
-            setVisible(true);
-            if OptionsManager.getOption("use2eKits") == "off" then
-              setVisible(false);
-            end
+            setVisible(false);
           end
         </script>
         <record>background</record>

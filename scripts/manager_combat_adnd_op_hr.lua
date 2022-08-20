@@ -32,6 +32,7 @@ function onInit()
     CombatManager.setCustomSort(sortfuncADnDNew);
 end
 
+-- think about how OSRIC zombies affect this
 function rollRandomInitNew(nMod, bADV)
     if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
         -- no modifiers
@@ -41,6 +42,7 @@ function rollRandomInitNew(nMod, bADV)
     rollRandomInitOrig(nMod, bADV);
 end
 
+-- this needs to be examined in full, due to any option changes
 function rollEntryInitNew(nodeEntry)
     local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
     local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
@@ -255,6 +257,7 @@ function applyInitResultToAllNPCs(nInitResult)
     end
 end
 
+-- maybe remove since there is no individual init in AD&D or OSRIC
 function applyIndividualInit(nTotal, rSource)
     local nodeEntry = ActorManager.getCTNode(rSource);
 
@@ -266,108 +269,110 @@ function applyIndividualInit(nTotal, rSource)
 end
 
 --
+-- i don't think this is needed, since there should only be low to high, now
 -- AD&D Style ordering (low to high initiative)
 --
-function sortfuncADnDNew(node2, node1)
-    local sOptInitOrdering = OptionsManager.getOption("initiativeOrdering");
-    local bHost = Session.IsHost;
-    local sOptCTSI = OptionsManager.getOption("CTSI");
+-- function sortfuncADnDNew(node2, node1)
+--     local sOptInitOrdering = OptionsManager.getOption("initiativeOrdering");
+--     local bHost = Session.IsHost;
+--     local sOptCTSI = OptionsManager.getOption("CTSI");
     
-    local sFaction1 = DB.getValue(node1, "friendfoe", "");
-    local sFaction2 = DB.getValue(node2, "friendfoe", "");
+--     local sFaction1 = DB.getValue(node1, "friendfoe", "");
+--     local sFaction2 = DB.getValue(node2, "friendfoe", "");
     
-    local bShowInit1 = bHost or ((sOptCTSI == "friend") and (sFaction1 == "friend")) or (sOptCTSI == "on");
-    local bShowInit2 = bHost or ((sOptCTSI == "friend") and (sFaction2 == "friend")) or (sOptCTSI == "on");
+--     local bShowInit1 = bHost or ((sOptCTSI == "friend") and (sFaction1 == "friend")) or (sOptCTSI == "on");
+--     local bShowInit2 = bHost or ((sOptCTSI == "friend") and (sFaction2 == "friend")) or (sOptCTSI == "on");
     
-    if bShowInit1 ~= bShowInit2 then
-      if bShowInit1 then
-        return true;
-      elseif bShowInit2 then
-        return false;
-      end
-    else
-      if bShowInit1 then
-        local nValue1 = DB.getValue(node1, "initresult", 0);
-        local nValue2 = DB.getValue(node2, "initresult", 0);
-        if nValue1 ~= nValue2 then
-            if sOptInitOrdering == "ascending" then
-                return nValue1 > nValue2;
-            else
-                return nValue1 < nValue2;
-            end
-        end
+--     if bShowInit1 ~= bShowInit2 then
+--       if bShowInit1 then
+--         return true;
+--       elseif bShowInit2 then
+--         return false;
+--       end
+--     else
+--       if bShowInit1 then
+--         local nValue1 = DB.getValue(node1, "initresult", 0);
+--         local nValue2 = DB.getValue(node2, "initresult", 0);
+--         if nValue1 ~= nValue2 then
+--             if sOptInitOrdering == "ascending" then
+--                 return nValue1 > nValue2;
+--             else
+--                 return nValue1 < nValue2;
+--             end
+--         end
         
-        nValue1 = DB.getValue(node1, "init", 0);
-        nValue2 = DB.getValue(node2, "init", 0);
-        if nValue1 ~= nValue2 then
-            if sOptInitOrdering == "ascending" then
-                return nValue1 > nValue2;
-            else
-                return nValue1 < nValue2;
-            end
-        end
-      else
-        if sFaction1 ~= sFaction2 then
-          if sFaction1 == "friend" then
-            return true;
-          elseif sFaction2 == "friend" then
-            return false;
-          end
-        end
-      end
-    end
+--         nValue1 = DB.getValue(node1, "init", 0);
+--         nValue2 = DB.getValue(node2, "init", 0);
+--         if nValue1 ~= nValue2 then
+--             if sOptInitOrdering == "ascending" then
+--                 return nValue1 > nValue2;
+--             else
+--                 return nValue1 < nValue2;
+--             end
+--         end
+--       else
+--         if sFaction1 ~= sFaction2 then
+--           if sFaction1 == "friend" then
+--             return true;
+--           elseif sFaction2 == "friend" then
+--             return false;
+--           end
+--         end
+--       end
+--     end
     
-    local sValue1 = DB.getValue(node1, "name", "");
-    local sValue2 = DB.getValue(node2, "name", "");
+--     local sValue1 = DB.getValue(node1, "name", "");
+--     local sValue2 = DB.getValue(node2, "name", "");
 
-    if sOptInitOrdering == "ascending" then
-        if sValue1 ~= sValue2 then
-            return sValue1 < sValue2;
-        end
+--     if sOptInitOrdering == "ascending" then
+--         if sValue1 ~= sValue2 then
+--             return sValue1 < sValue2;
+--         end
     
-        return node1.getNodeName() < node2.getNodeName();
-    else
-        if sValue1 ~= sValue2 then
-            return sValue2 < sValue1;
-        end
+--         return node1.getNodeName() < node2.getNodeName();
+--     else
+--         if sValue1 ~= sValue2 then
+--             return sValue2 < sValue1;
+--         end
     
-        return node2.getNodeName() < node1.getNodeName();
-    end
-end
+--         return node2.getNodeName() < node1.getNodeName();
+--     end
+-- end
 
-function handleInitiativeChange(msgOOB)
-    local nodeCT = DB.findNode(msgOOB.sCTRecord);
+-- function handleInitiativeChange(msgOOB)
+--     local nodeCT = DB.findNode(msgOOB.sCTRecord);
 
-    if nodeCT then
-        DB.setValue(nodeCT,"initresult","number",msgOOB.nNewInit);
-        DB.setValue(nodeCT,"initresult_d6","number",msgOOB.nNewInit);
-    end
-end
+--     if nodeCT then
+--         DB.setValue(nodeCT,"initresult","number",msgOOB.nNewInit);
+--         DB.setValue(nodeCT,"initresult_d6","number",msgOOB.nNewInit);
+--     end
+-- end
 
-function resetInitNew()
-    -- set last init results to 0
-    PC_LASTINIT = 0;
-    NPC_LASTINIT = 0;
+-- function resetInitNew()
+--     -- set last init results to 0
+--     PC_LASTINIT = 0;
+--     NPC_LASTINIT = 0;
 
-    for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
-        resetCombatantInit(nodeCT);
-    end
+--     for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
+--         resetCombatantInit(nodeCT);
+--     end
 
-end
+-- end
 
-function onRoundStartNew(nCurrent)
-    local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
+-- function onRoundStartNew(nCurrent)
+--     local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
 
-    PC_LASTINIT = 0;
-    NPC_LASTINIT = 0;
+--     PC_LASTINIT = 0;
+--     NPC_LASTINIT = 0;
     
-    if bOptRoundStartResetInit then
-        for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
-            resetCombatantInit(nodeCT);
-        end
-    end
-end
+--     if bOptRoundStartResetInit then
+--         for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
+--             resetCombatantInit(nodeCT);
+--         end
+--     end
+-- end
 
+--decide what to do with this
 function resetCombatantInit(nodeCT)
     DB.setValue(nodeCT, "initresult", "number", 0);
     DB.setValue(nodeCT, "initresult_d6", "number", 0);

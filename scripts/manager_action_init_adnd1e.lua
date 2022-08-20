@@ -82,79 +82,79 @@ function handleApplyInitNew(msgOOB)
     end
 
     -- if ties are turned off
-    if not bOptInitTies then
-        -- if a side's init has already been rolled
-        if NPC_LASTINIT ~= 0 or PC_LASTINIT ~= 0 then
-            -- if a PC rolled for initiative
-            if ActorManager.isPC(rSource) then
-                -- check for ties and correct
-                -- this is to make sure we dont have same initiative
-                -- give the benefit to players.
-                if PC_LASTINIT == NPC_LASTINIT then
-                    -- don't want init = 0
-                    -- standard tiebreaker, without swapping
-                    if not bOptInitGroupingSwap then
-                        if NPC_LASTINIT ~= 1 then
-                            nInitResult = NPC_LASTINIT - 1;
-                            CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
-                            PC_LASTINIT = nInitResult;
-                        else
-                            nInitResult = PC_LASTINIT + 1;
-                            CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
-                            NPC_LASTINIT = nInitResult;
-                        end
-                    else
-                    -- do the reverse so that pcs still have the advantage
-                        if PC_LASTINIT ~= 1 then
-                            nInitResult = PC_LASTINIT - 1;
-                            CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
-                            NPC_LASTINIT = nInitResult;
-                        else
-                            nInitResult = NPC_LASTINIT + 1;
-                            CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
-                            PC_LASTINIT = nInitResult;
-                        end
-                    end
-                    -- don't want inits > 6
-                    if PC_LASTINIT > 6 or NPC_LASTINIT > 6 then
-                        -- subtract 1 from each group's init
-                        PC_LASTINIT = PC_LASTINIT - 1;
-                        NPC_LASTINIT = NPC_LASTINIT - 1;
-                        -- re-apply all inits
-                        CombatManagerADND1e.applyInitResultToAllPCs(PC_LASTINIT);
-                        CombatManagerADND1e.applyInitResultToAllNPCs(NPC_LASTINIT);
-                    end
-                end
-            -- if an npc rolled for initiative
-            else
-                -- check for ties and correct
-                -- this is to make sure we dont have same initiative
-                -- give the benefit to players.
-                if NPC_LASTINIT == PC_LASTINIT then
-                    -- standard tiebreaker, without swapping
-                    if not bOptInitGroupingSwap then
-                        nInitResult = PC_LASTINIT + 1;
-                        CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
-                        NPC_LASTINIT = nInitResult;
-                    else
-                    -- do the reverse so that pcs still have the advantage
-                        nInitResult = NPC_LASTINIT + 1;
-                        CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
-                        PC_LASTINIT = nInitResult;
-                    end
-                end
-                -- don't want inits > 6
-                if PC_LASTINIT > 6 or NPC_LASTINIT > 6 then
-                    -- subtract 1 from each group's init
-                    PC_LASTINIT = PC_LASTINIT - 1;
-                    NPC_LASTINIT = NPC_LASTINIT - 1;
-                    -- re-apply all inits
-                    CombatManagerADND1e.applyInitResultToAllPCs(PC_LASTINIT);
-                    CombatManagerADND1e.applyInitResultToAllNPCs(NPC_LASTINIT);
-                end
-            end
-        end
-    end
+    -- if not bOptInitTies then
+    --     -- if a side's init has already been rolled
+    --     if NPC_LASTINIT ~= 0 or PC_LASTINIT ~= 0 then
+    --         -- if a PC rolled for initiative
+    --         if ActorManager.isPC(rSource) then
+    --             -- check for ties and correct
+    --             -- this is to make sure we dont have same initiative
+    --             -- give the benefit to players.
+    --             if PC_LASTINIT == NPC_LASTINIT then
+    --                 -- don't want init = 0
+    --                 -- standard tiebreaker, without swapping
+    --                 if not bOptInitGroupingSwap then
+    --                     if NPC_LASTINIT ~= 1 then
+    --                         nInitResult = NPC_LASTINIT - 1;
+    --                         CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
+    --                         PC_LASTINIT = nInitResult;
+    --                     else
+    --                         nInitResult = PC_LASTINIT + 1;
+    --                         CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
+    --                         NPC_LASTINIT = nInitResult;
+    --                     end
+    --                 else
+    --                 -- do the reverse so that pcs still have the advantage
+    --                     if PC_LASTINIT ~= 1 then
+    --                         nInitResult = PC_LASTINIT - 1;
+    --                         CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
+    --                         NPC_LASTINIT = nInitResult;
+    --                     else
+    --                         nInitResult = NPC_LASTINIT + 1;
+    --                         CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
+    --                         PC_LASTINIT = nInitResult;
+    --                     end
+    --                 end
+    --                 -- don't want inits > 6
+    --                 if PC_LASTINIT > 6 or NPC_LASTINIT > 6 then
+    --                     -- subtract 1 from each group's init
+    --                     PC_LASTINIT = PC_LASTINIT - 1;
+    --                     NPC_LASTINIT = NPC_LASTINIT - 1;
+    --                     -- re-apply all inits
+    --                     CombatManagerADND1e.applyInitResultToAllPCs(PC_LASTINIT);
+    --                     CombatManagerADND1e.applyInitResultToAllNPCs(NPC_LASTINIT);
+    --                 end
+    --             end
+    --         -- if an npc rolled for initiative
+    --         else
+    --             -- check for ties and correct
+    --             -- this is to make sure we dont have same initiative
+    --             -- give the benefit to players.
+    --             if NPC_LASTINIT == PC_LASTINIT then
+    --                 -- standard tiebreaker, without swapping
+    --                 if not bOptInitGroupingSwap then
+    --                     nInitResult = PC_LASTINIT + 1;
+    --                     CombatManagerADND1e.applyInitResultToAllNPCs(nInitResult);
+    --                     NPC_LASTINIT = nInitResult;
+    --                 else
+    --                 -- do the reverse so that pcs still have the advantage
+    --                     nInitResult = NPC_LASTINIT + 1;
+    --                     CombatManagerADND1e.applyInitResultToAllPCs(nInitResult);
+    --                     PC_LASTINIT = nInitResult;
+    --                 end
+    --             end
+    --             -- don't want inits > 6
+    --             if PC_LASTINIT > 6 or NPC_LASTINIT > 6 then
+    --                 -- subtract 1 from each group's init
+    --                 PC_LASTINIT = PC_LASTINIT - 1;
+    --                 NPC_LASTINIT = NPC_LASTINIT - 1;
+    --                 -- re-apply all inits
+    --                 CombatManagerADND1e.applyInitResultToAllPCs(PC_LASTINIT);
+    --                 CombatManagerADND1e.applyInitResultToAllNPCs(NPC_LASTINIT);
+    --             end
+    --         end
+    --     end
+    -- end
 
     -- init grouping swap
     if bOptInitGroupingSwap then

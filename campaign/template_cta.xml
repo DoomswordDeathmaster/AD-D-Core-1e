@@ -5,10 +5,7 @@
         <script>
             function onInit()
                 super.onInit();
-                setVisible(true);
-                if OptionsManager.getOption("initiativeDie") == "d6" then
-                    setVisible(false);
-                end
+                setVisible(false);
             end
             function action(draginfo)
                 local node = window.getDatabaseNode();
@@ -38,10 +35,7 @@
         <script>
             function onInit()
                 super.onInit();
-                setVisible(false);
-                if OptionsManager.getOption("initiativeDie") == "d6" then
-                    setVisible(true);
-                end
+                setVisible(true);
             end
             function action(draginfo)
                 local node = window.getDatabaseNode();

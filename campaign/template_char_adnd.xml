@@ -31,10 +31,7 @@
             <center />
             <script>
                 function onInit()
-                    setVisible(true);
-                    if OptionsManager.getOption("use2eKits") == "off" then
-                        setVisible(false);
-                    end
+                    setVisible(false);
                 end
             </script>
         </label>
@@ -46,10 +43,7 @@
             <center />
             <script>
                 function onInit()
-                    setVisible(false);
-                    if OptionsManager.getOption("use2eKits") == "off" then
-                        setVisible(true);
-                    end
+                    setVisible(true);
                 end
             </script>
         </label>

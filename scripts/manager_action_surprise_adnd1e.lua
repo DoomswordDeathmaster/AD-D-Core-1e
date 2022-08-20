@@ -40,6 +40,7 @@ end
 
 -- return the current surprise value for this target.
 function getSurpriseTarget(node)
+    -- look at this more carefully, in terms of surprise base, hardcoded as 2, and the getvalue
   local nBase = DB.getValue(node,"surprise.base",3);
   local nMod = DB.getValue(node,"surprise.mod",0);
   local nTmpMod = DB.getValue(node,"surprise.tempmod",0);
