@@ -32,7 +32,7 @@ function registerOptions()
 	-- 	{ labels = "option_val_pc|option_val_both|option_val_neither", values = "pc|both|neither", baselabel = "option_val_npc", baseval = "npc", default = "npc" });
 	-- Initiative Grouping Swap
 	-- Available in OSRIC, set as an AD&D/OSRIC option, rename to something else with AD&D/OSRIC terms
-	OptionsManager.registerOption2("initiativeOsricSwap", false, "option_header_adnd1e", "option_label_adnd1e_osric_swap", "option_entry_cycler", 
+	OptionsManager.registerOption2("initiativeOsricSwap", false, "option_header_adnd1e", "option_label_adnd1e_initiative_osric_swap", "option_entry_cycler", 
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
 	-- Surprise Die
 	-- d6 only, remove other options by default

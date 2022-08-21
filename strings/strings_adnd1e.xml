@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root>
   <!-- Options header strings  -->
-  <string name="option_header_adnd1e">AD&amp;D 1e</string>
+  <string name="option_header_adnd1e">AD&amp;D 1e/OSRIC</string>
   
   <!-- Option label strings -->
-  <string name="option_label_adnd1e_ability_check_allow">Allow Ability Checks</string>
-  <string name="option_label_adnd1e_initiative_delay_allow">Allow Initiative Delay</string>
+  <string name="option_label_adnd1e_ability_check_allow">Allow Ability Checks (KEEP?)</string>
+  <string name="option_label_adnd1e_initiative_delay_allow">Allow Initiative Delay (OSRIC)</string>
   <!-- <string name="option_label_adnd_op_hr_initiative_di">Initiative Die</string> -->
   <!-- <string name="option_labeel_adnd_op_hr_initiative_ordering">Initiative Ordering</string> -->
   <!-- <string name="option_label_adnd_op_hr_initiative_grouping">Initiative Grouping</string> -->
