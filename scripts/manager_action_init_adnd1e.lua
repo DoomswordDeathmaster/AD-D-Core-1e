@@ -16,13 +16,7 @@ end
 function getRollNew(rActor, bSecretRoll, rItem)
     local rRoll;
 
-    -- if OptionsManager.getOption("initiativeModifiersAllow") == "on" then
-    --     -- default, with modifiers
-    --     rRoll = getRollOrig(rActor, bSecretRoll, rItem);
-    -- else
-        -- no initiative modifiers
     rRoll = getRollNoMods(rActor, bSecretRoll, rItem);
-    --end
 
     return rRoll;
 end
@@ -34,7 +28,7 @@ function getRollNoMods(rActor, bSecretRoll, rItem)
     rRoll.sType = "init";
     rRoll.aDice = { "d" .. DataCommonADND.nDefaultInitiativeDice };
 
-    -- Decide how to get init mod from rActor for at least zombies in OSRIC
+    -- TODO: Decide how to get init mod from rActor for at least zombies in OSRIC
     
     rRoll.nMod = 0;
     rRoll.sDesc = "[INIT]";
@@ -48,8 +42,6 @@ function handleApplyInitNew(msgOOB)
     local nTotal = tonumber(msgOOB.nTotal) or 0;
 
     local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
-    --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
-    --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
     local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
 
     -- grouped initiative options
@@ -81,7 +73,7 @@ function handleApplyInitNew(msgOOB)
         end
     --else
         -- no group options set
-        CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
+        --CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
 --end
 
     -- if ties are turned off

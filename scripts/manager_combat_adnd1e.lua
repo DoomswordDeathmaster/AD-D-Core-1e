@@ -32,7 +32,7 @@ function onInit()
     CombatManager.setCustomSort(sortfuncADnDNew);
 end
 
--- think about how OSRIC zombies affect this
+-- TODO: think about how OSRIC zombies affect this
 function rollRandomInitNew(nMod, bADV)
     --if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
         -- no modifiers
@@ -42,7 +42,7 @@ function rollRandomInitNew(nMod, bADV)
     rollRandomInitOrig(nMod, bADV);
 end
 
--- this needs to be examined in full, due to any option changes
+-- TODO: this needs to be examined in full, due to any option changes
 function rollEntryInitNew(nodeEntry)
     --local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
     --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
@@ -259,15 +259,15 @@ function applyInitResultToAllNPCs(nInitResult)
 end
 
 -- maybe remove since there is no individual init in AD&D or OSRIC
-function applyIndividualInit(nTotal, rSource)
-    local nodeEntry = ActorManager.getCTNode(rSource);
+-- function applyIndividualInit(nTotal, rSource)
+--     local nodeEntry = ActorManager.getCTNode(rSource);
 
-    -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
-    DB.setValue(nodeEntry, "initresult", "number", nTotal);
-    DB.setValue(nodeEntry, "initresult_d6", "number", nTotal);
-    -- set init rolled
-    DB.setValue(nodeEntry, "initrolled", "number", 1);
-end
+--     -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
+--     DB.setValue(nodeEntry, "initresult", "number", nTotal);
+--     DB.setValue(nodeEntry, "initresult_d6", "number", nTotal);
+--     -- set init rolled
+--     DB.setValue(nodeEntry, "initrolled", "number", 1);
+-- end
 
 --
 -- i don't think this is needed, since there should only be low to high, now
