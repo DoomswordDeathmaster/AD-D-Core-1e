@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root>
   <!-- Options header strings  -->
-  <string name="option_header_adnd_op_hr">AD&amp;D Options and House Rules</string>
+  <string name="option_header_adnd1e">AD&amp;D 1e</string>
   
   <!-- Option label strings -->
-  <string name="option_label_adnd_op_hr_ability_check_allow">Allow Ability Checks</string>
-  <string name="option_label_adnd_op_hr_initiative_delay_allow">Allow Initiative Delay</string>
+  <string name="option_label_adnd1e_ability_check_allow">Allow Ability Checks</string>
+  <string name="option_label_adnd1e_initiative_delay_allow">Allow Initiative Delay</string>
   <!-- <string name="option_label_adnd_op_hr_initiative_di">Initiative Die</string> -->
   <!-- <string name="option_labeel_adnd_op_hr_initiative_ordering">Initiative Ordering</string> -->
-  <string name="option_label_adnd_op_hr_initiative_grouping">Initiative Grouping</string>
-  <string name="option_label_adnd_op_hr_initiative_grouping_swap">Initiative Grouping: Swap Results</string>
-  <string name="option_label_adnd_op_hr_initiative_modifiers_allow">Allow Initiative Modifiers</string>
-  <string name="option_label_adnd_op_hr_initiative_ties_allow">Initiative Grouping: Allow Ties</string>
+  <!-- <string name="option_label_adnd_op_hr_initiative_grouping">Initiative Grouping</string> -->
+  <string name="option_label_adnd1e_initiative_osric_swap">OSRIC Initiative Swap</string>
+  <!-- <string name="option_label_adnd_op_hr_initiative_modifiers_allow">Allow Initiative Modifiers</string> -->
+  <!-- <string name="option_label_adnd_op_hr_initiative_ties_allow">Initiative Grouping: Allow Ties</string> -->
   <!-- <string name="option_label_adnd_op_hr_surprise_die">Surprise Die</string> -->
   <!-- <string name="option_label_adnd_op_hr_use_2e_kits">Use 2e Kits</string> -->
-  <string name="option_label_adnd_op_hr_round_start_reset_init">Initiative Reset on Round Start</string>
+  <string name="option_label_adnd1e_round_start_reset_init">Initiative Reset on Round Start</string>
   <!-- <string name="option_label_adnd_op_hr_add1e_properties">Use 1e Properties</string> -->
-  <string name="option_label_adnd_op_hr_osric_monster_matrices">Use OSRIC Monster Attack Matrices</string>
+  <string name="option_label_adnd1e_osric_monster_matrices">Use OSRIC Monster Attack Matrices</string>
   
   <!-- Option value strings -->
   <string name="option_val_d6">d6</string>

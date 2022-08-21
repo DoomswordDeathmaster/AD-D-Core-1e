@@ -21,7 +21,7 @@ function getRollNew(rActor, bSecretRoll, rItem)
     --     rRoll = getRollOrig(rActor, bSecretRoll, rItem);
     -- else
         -- no initiative modifiers
-        rRoll = getRollNoMods(rActor, bSecretRoll, rItem);
+    rRoll = getRollNoMods(rActor, bSecretRoll, rItem);
     --end
 
     return rRoll;
@@ -50,7 +50,7 @@ function handleApplyInitNew(msgOOB)
     local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
     --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
     --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
-    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeGroupingSwap") == 'on');
+    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
 
     -- grouped initiative options
     --if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then

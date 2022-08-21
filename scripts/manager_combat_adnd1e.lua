@@ -34,20 +34,20 @@ end
 
 -- think about how OSRIC zombies affect this
 function rollRandomInitNew(nMod, bADV)
-    if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
+    --if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
         -- no modifiers
-        nMod = 0;
-    end
+    nMod = 0;
+    --end
 
     rollRandomInitOrig(nMod, bADV);
 end
 
 -- this needs to be examined in full, due to any option changes
 function rollEntryInitNew(nodeEntry)
-    local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
+    --local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
     --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
     --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
-    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeGroupingSwap") == 'on');
+    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
 
 	if not nodeEntry then
 		return;
@@ -58,14 +58,14 @@ function rollEntryInitNew(nodeEntry)
     local nInitMOD = 0;
 
     -- mods on
-    if bOptInitMods then
-        -- Start with the base initiative bonus
-        local nInit = DB.getValue(nodeEntry, "init", 0);
-        -- Get any effect modifiers
-        local rActor = ActorManager.resolveActor(nodeEntry);
-        local aEffectDice, nEffectBonus = EffectManager5E.getEffectsBonus(rActor, "INIT");
-        nInitMOD = StringManager.evalDice(aEffectDice, nEffectBonus);
-    end
+    -- if bOptInitMods then
+    --     -- Start with the base initiative bonus
+    --     local nInit = DB.getValue(nodeEntry, "init", 0);
+    --     -- Get any effect modifiers
+    --     local rActor = ActorManager.resolveActor(nodeEntry);
+    --     local aEffectDice, nEffectBonus = EffectManager5E.getEffectsBonus(rActor, "INIT");
+    --     nInitMOD = StringManager.evalDice(aEffectDice, nEffectBonus);
+    -- end
 
 	-- Check for the ADVINIT effect
 	local bADV = EffectManager5E.hasEffectCondition(rActor, "ADVINIT");
@@ -81,9 +81,9 @@ function rollEntryInitNew(nodeEntry)
         local nInitResult = 0;
         
         -- if init mods are on
-        if bOptInitMods then
-            nInitPC = DB.getValue(nodeChar,"initiative.total",0);
-        end
+        -- if bOptInitMods then
+        --     nInitPC = DB.getValue(nodeChar,"initiative.total",0);
+        -- end
 
         -- if grouping involving pcs is on
         if bOptPCVNPCINIT then --or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
@@ -119,23 +119,23 @@ function rollEntryInitNew(nodeEntry)
             -- and set nInit.
             local nTotal = DB.getValue(nodeEntry,"initiative.total",0);
 
-            if bOptInitMods then
-                -- flip through weaponlist, get the largest speedfactor as default
-                local nSpeedFactor = 0;
+            -- if bOptInitMods then
+            --     -- flip through weaponlist, get the largest speedfactor as default
+            --     local nSpeedFactor = 0;
                 
-                for _,nodeWeapon in pairs(DB.getChildren(nodeEntry, "weaponlist")) do
-                    local nSpeed = DB.getValue(nodeWeapon,"speedfactor",0);
-                    if nSpeed > nSpeedFactor then
-                        nSpeedFactor = nSpeed;
-                    end
-                end
+            --     for _,nodeWeapon in pairs(DB.getChildren(nodeEntry, "weaponlist")) do
+            --         local nSpeed = DB.getValue(nodeWeapon,"speedfactor",0);
+            --         if nSpeed > nSpeedFactor then
+            --             nSpeedFactor = nSpeed;
+            --         end
+            --     end
                 
-                if nSpeedFactor ~= 0 then
-                    nInit = nSpeedFactor + nInitMOD ;
-                elseif (nTotal ~= 0) then 
-                    nInit = nTotal + nInitMOD ;
-                end
-            end
+            --     if nSpeedFactor ~= 0 then
+            --         nInit = nSpeedFactor + nInitMOD ;
+            --     elseif (nTotal ~= 0) then 
+            --         nInit = nTotal + nInitMOD ;
+            --     end
+            -- end
             
             --[[ IF we ignore size/mods, clear nInit ]]
             if OptionsManager.getOption("OPTIONAL_INIT_SIZEMODS") ~= "on" then
@@ -361,16 +361,16 @@ function resetInitNew()
 end
 
 function onRoundStartNew(nCurrent)
-    local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
+    --local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
 
     PC_LASTINIT = 0;
     NPC_LASTINIT = 0;
     
-    if bOptRoundStartResetInit then
-        for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
-            resetCombatantInit(nodeCT);
-        end
+    --if bOptRoundStartResetInit then
+    for _,nodeCT in pairs(CombatManager.getCombatantNodes()) do
+        resetCombatantInit(nodeCT);
     end
+    --end
 end
 
 --decide what to do with this

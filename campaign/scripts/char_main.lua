@@ -84,10 +84,14 @@ function updateInitiativeScores()
     --local initiativeMod = DB.getValue(nodeChar,"initiative.misc",0);
     -- modifiers off
     --if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
-        -- zmobies in OSRIC
-        if (initiativeMod ~= 99) then
-            initiativeMod = 0;
-        end
+    
+    -- zmobies in OSRIC
+    -- if (initiativeMod ~= 99) then
+    --     initiativeMod = 0;
+    -- end
+    
+    initiativeMod = 0;
+    
     --end
 
     -- where does nTmpMod come from - check 2e
