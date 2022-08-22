@@ -38,7 +38,7 @@ function rollRandomInitNew(nMod, bADV)
         -- no modifiers
     nMod = 0;
     --end
-
+    Debug.console("rollRandomInitNew");
     rollRandomInitOrig(nMod, bADV);
 end
 
@@ -49,11 +49,14 @@ function rollEntryInitNew(nodeEntry)
     --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
     local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
 
+    Debug.console("nodeEntry", nodeEntry);
+
 	if not nodeEntry then
 		return;
 	end
 
-    local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
+    Debug.console("rollEntryInitNew");
+    --local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
     -- default init mods to 0
     local nInitMOD = 0;
 
@@ -75,6 +78,7 @@ function rollEntryInitNew(nodeEntry)
 
     -- it's a pc
 	if sClass == "charsheet" then
+        Debug.console("PC Init");
         local nodeChar = DB.findNode(sRecord);
         -- default PC initiative totals to 0
         local nInitPC = 0;
@@ -86,32 +90,33 @@ function rollEntryInitNew(nodeEntry)
         -- end
 
         -- if grouping involving pcs is on
-        if bOptPCVNPCINIT then --or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
-            -- roll without mods
-            nInitResult = rollRandomInitOrig(0, bADV);
-            -- group init - apply init result to remaining PCs
-            applyInitResultToAllPCs(nInitResult);
-            -- set last init for comparison for ties and swapping
-            PC_LASTINIT = nInitResult;
-        else
+        -- if bOptPCVNPCINIT then --or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
+        -- roll without mods
+             nInitResult = rollRandomInitOrig(0, bADV);
+        -- group init - apply init result to remaining PCs
+             applyInitResultToAllPCs(nInitResult);
+        -- set last init for comparison for ties and swapping
+             PC_LASTINIT = nInitResult;
+        -- else
             -- individual init
             nInitResult = rollRandomInitOrig(nInitPC + nInitMOD, bADV);
-        end
+        --end
 
         -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
     else
+        Debug.console("NPC Init");
         -- it's an npc
         -- if grouping involving npcs is on
-        if bOptPCVNPCINIT then --or (sOptInitGrouping == "npc" or sOptInitGrouping == "both") then
-            -- roll without mods
-            nInitResult = rollRandomInitOrig(0, bADV);
-            -- group init - apply init result to remaining NPCs
-            applyInitResultToAllNPCs(nInitResult);
-            -- set last init for comparison for ties and swapping
-            NPC_LASTINIT = nInitResult;
-        else
+        -- if bOptPCVNPCINIT then --or (sOptInitGrouping == "npc" or sOptInitGrouping == "both") then
+        -- roll without mods
+        nInitResult = rollRandomInitOrig(0, bADV);
+        -- group init - apply init result to remaining NPCs
+        applyInitResultToAllNPCs(nInitResult);
+        -- set last init for comparison for ties and swapping
+        NPC_LASTINIT = nInitResult;
+        -- else
             -- set nInit to 0 for disallowing mods
             --consider for OSRIC zombies
             local nInit = 0;
@@ -196,7 +201,7 @@ function rollEntryInitNew(nodeEntry)
                     DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
                 end
             end
-        end
+        --end
     end
 
     -- deal with ties when all initiative is grouped and ties are turned off
@@ -222,6 +227,7 @@ function rollEntryInitNew(nodeEntry)
 
         -- init grouping swap
         if bOptInitGroupingSwap then
+            Debug.console("SWAP!");
             --if bOptPCVNPCINIT then --or (sOptInitGrouping ~= "neither") then
                 applyInitResultToAllPCs(NPC_LASTINIT);
                 applyInitResultToAllNPCs(PC_LASTINIT);

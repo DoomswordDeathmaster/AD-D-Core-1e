@@ -28,7 +28,6 @@ function onInit()
   end
   --sPath    = path[1];
   --sClass   = class[1];
-  Debug.console("npc_click_chooser");
 
   if sRecord then
     sRecord = DB.getPath(window.getDatabaseNode(),sRecord);

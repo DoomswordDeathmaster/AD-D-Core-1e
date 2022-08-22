@@ -6,7 +6,7 @@ function registerOptions()
 	-- Allow Ability Checks
 	-- TODO: DECIDE Nothing in AD&D or OSRIC for this. Remove
 	OptionsManager.registerOption2("abilityCheckAllow", false, "option_header_adnd1e", "option_label_adnd1e_ability_check_allow", "option_entry_cycler", 
-		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+		{ labels = "option_val_off", values = "off", baselabel = "option_val_on", baseval = "on", default = "on" });
 	-- Allow Initiative Delay
 	-- Nothing that would occurs within the round in AD&D, OSRIC allow delay and set the individual's initiative to 10 (hmm, maybe default as-is, off none and OSRIC set to 7)
 	OptionsManager.registerOption2("initiativeDelayAllow", false, "option_header_adnd1e", "option_label_adnd1e_initiative_delay_allow", "option_entry_cycler", 

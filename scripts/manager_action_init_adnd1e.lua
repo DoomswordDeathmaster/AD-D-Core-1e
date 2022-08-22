@@ -15,21 +15,20 @@ end
 -- initiative with modifiers, from item entry in ct or init button on character
 function getRollNew(rActor, bSecretRoll, rItem)
     local rRoll;
-
+    Debug.console("getRollNew");
     rRoll = getRollNoMods(rActor, bSecretRoll, rItem);
-
+    Debug.console("ROLLNOMODS");
     return rRoll;
 end
 
 -- initiative without modifiers, from item entry in ct or init button on character
 function getRollNoMods(rActor, bSecretRoll, rItem)
     local rRoll = {};
-    
+    Debug.console("getRollNoMods");
     rRoll.sType = "init";
     rRoll.aDice = { "d" .. DataCommonADND.nDefaultInitiativeDice };
 
     -- TODO: Decide how to get init mod from rActor for at least zombies in OSRIC
-    
     rRoll.nMod = 0;
     rRoll.sDesc = "[INIT]";
     rRoll.bSecret = bSecretRoll;
@@ -41,12 +40,18 @@ function handleApplyInitNew(msgOOB)
     local rSource = ActorManager.resolveActor(msgOOB.sSourceNode);
     local nTotal = tonumber(msgOOB.nTotal) or 0;
 
-    local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
+    --local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
     local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
 
     -- grouped initiative options
     --if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
-        if bOptPCVNPCINIT then --or sOptInitGrouping == "both") then
+        
+    
+    
+    
+        -- TODO: handle some of these options that exist in 2e but don't make sense in 1e
+        --if bOptPCVNPCINIT then --or sOptInitGrouping == "both") then
+        
             if ActorManager.isPC(rSource) then
                 CombatManagerADND1e.applyInitResultToAllPCs(nTotal);
                 PC_LASTINIT = nTotal;
@@ -70,7 +75,16 @@ function handleApplyInitNew(msgOOB)
         --         CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
         --         PC_LASTINIT = nTotal;
         --     end
-        end
+        
+    
+    
+    
+        --end
+
+
+
+
+
     --else
         -- no group options set
         --CombatManagerADND1e.applyIndividualInit(nTotal, rSource);
