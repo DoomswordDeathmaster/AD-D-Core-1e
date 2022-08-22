@@ -32,6 +32,7 @@
     
     <!-- High-level scripts -->
     <script name="DataCommonADND1e" file="scripts/data_common_adnd1e.lua" />
+    <script name="OptionsADND" file="scripts/data_options_adnd.lua" />
     <script name="ActionInitManagerADND1e" file="scripts/manager_action_init_adnd1e.lua" />
     <script name="ActionSurpriseManagerADND1e" file="scripts/manager_action_surprise_adnd1e.lua" />
     <script name="ADND1eManager" file="scripts/manager_adnd1e.lua" />

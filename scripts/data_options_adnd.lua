@@ -14,6 +14,7 @@ function onInit()
   end
   
   function registerOptions()
+    Debug.console("ORIGINAL OPTIONS");
     -- use Menus or Sidebar
     OptionsManager.registerOption2("OPTIONS_MENU", true, "option_header_client", "option_label_OPTION_MENU", "option_entry_cycler", 
         { labels = "option_val_sidebar", values = "sidebar", baselabel = "option_val_menus", baseval = "menus", default = "menus" });
@@ -24,11 +25,14 @@ function onInit()
     -- OptionsManager.registerOption2("OPTIONAL_ARMORDP", false, "option_header_adnd_options", "option_label_OPTIONAL_ARMORDB", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
   
-    -- use Fighter Handbook armor damagepoint rules
+    -- -- use Fighter Handbook armor damagepoint rules
     -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
-    -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE_COIN", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE_COIN", "option_entry_cycler", 
-    --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+
+    -- TODO: see what this does and set accordingly
+    OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE_COIN", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE_COIN", "option_entry_cycler", 
+      { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+    -- TODO: look into 1e and OSRIC death
     OptionsManager.registerOption2("HouseRule_DeathsDoor", false, "option_header_adnd_options", "option_label_ADND_DEATHSDOOR", "option_entry_cycler", 
       { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
     -- OptionsManager.registerOption2("OPTIONAL_INIT_SIZEMODS", false, "option_header_adnd_options", "option_label_OPTIONAL_INIT_SIZEMODS", "option_entry_cycler", 
@@ -70,16 +74,24 @@ function onInit()
     OptionsManager.registerOption2("TOKEN_OPTION_INIT", false, "option_header_token", "option_label_TOKEN_OPTION_INIT", "option_entry_cycler", 
         { labels = "option_val_has_init_token2|option_val_has_init_token3|option_val_has_init_token4|option_val_has_init_token5|option_val_has_init_token6", values = "2|3|4|5|6", baselabel = "option_val_has_init_token1", baseval = "1", default = "1" });
   
-      --- HOUSE RULES
-      
+    
+    
+    
+    --- HOUSE RULES
+    -- TODO: consider changing HD/HP values or removing this
     OptionsManager.registerOption2("HRNH", false, "option_header_houserule", "option_label_HRNH", "option_entry_cycler", 
         { labels = "option_val_max|option_val_random|option_val_80plus", values = "max|random|80plus", baselabel = "option_val_off", baseval = "off", default = "random" });
-    -- OptionsManager.registerOption2("HouseRule_InitEachRound", false, "option_header_houserule", "option_label_HOUSE_RULE_INIT_EACH_ROUND", "option_entry_cycler", 
-    --     { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
-    OptionsManager.registerOption2("HouseRule_CRIT_TYPE", false, "option_header_houserule", "option_label_HR_CRIT", "option_entry_cycler", 
+    -- TODO: look into ADD/OSRIC init to see if it occurs every round by default
+    OptionsManager.registerOption2("HouseRule_InitEachRound", false, "option_header_houserule", "option_label_HOUSE_RULE_INIT_EACH_ROUND", "option_entry_cycler", 
+        { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+    -- TODO: see if there's anything in 1e or OSRIC to support crits
+        OptionsManager.registerOption2("HouseRule_CRIT_TYPE", false, "option_header_houserule", "option_label_HR_CRIT", "option_entry_cycler", 
         { labels = "option_val_hr_crit_maxdmg|option_val_hr_crit_timestwo|option_val_hr_crit_none", values = "max|timestwo|none", baselabel = "option_val_hr_crit_doubledice", baseval = "doubledice", default = "doubledice" });
   
   
+
+
+
     -- this is not a option in AD&D 2e?
     -- OptionsManager.registerOption2("HouseRule_ASCENDING_AC", false, "option_header_houserule", "option_label_HR_ASENDING_AC", "option_entry_cycler", 
         -- { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
