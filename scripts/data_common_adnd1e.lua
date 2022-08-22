@@ -45,6 +45,7 @@ function onInit()
         DataCommonADND.coreVersion = coreVersion;
 
         -- default coin weight, 10 coins = 1 pound, 1e, ouch
+        -- TODO: OSRIC coin weights
         DataCommonADND.nDefaultCoinWeight = 0.1;
         
         -- aStrength[abilityScore]={hit adj, dam adj, weight allow, max press, open doors, bend bars}

@@ -11,7 +11,8 @@ function onInit()
     -- local initiativeDie = OptionsManager.getOption("initiativeDie");
     -- local initiativeDieNumber = initiativeDie:gsub("d", "");
 
-    -- DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber;
+    local initiativeDieNumber = 6;
+    DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber;
 
     rollEntryInitOrig = CombatManagerADND.rollEntryInit;
     CombatManagerADND.rollEntryInit = rollEntryInitNew;
