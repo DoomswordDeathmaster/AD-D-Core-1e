@@ -7,7 +7,7 @@ function onInit()
     registerOptions();
     
     --OptionsManager.registerCallback("OPTIONS_MENU", updateMenuStyle);
-    OptionsManager.registerCallback("OPTIONAL_ENCUMBRANCE", updateForEncumbranceOption);
+    --OptionsManager.registerCallback("OPTIONAL_ENCUMBRANCE", updateForEncumbranceOption);
     --OptionsManager.registerCallback("OPTIONS_EFFECT_AURA", TokenManagerADND.applyAuras);
     createBackupDBOnStartCheck();
   
@@ -25,13 +25,13 @@ function onInit()
     -- OptionsManager.registerOption2("OPTIONAL_ARMORDP", false, "option_header_adnd_options", "option_label_OPTIONAL_ARMORDB", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
   
-    -- -- use Fighter Handbook armor damagepoint rules
+    -- encumbrance should be mandatory
     -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
 
-    -- TODO: see what this does and set accordingly
-    OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE_COIN", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE_COIN", "option_entry_cycler", 
-      { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+    -- TODO: doesn't even exists in thed ruleset, or seems not to
+    -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE_COIN", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE_COIN", "option_entry_cycler", 
+    --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
     -- TODO: look into 1e and OSRIC death
     OptionsManager.registerOption2("HouseRule_DeathsDoor", false, "option_header_adnd_options", "option_label_ADND_DEATHSDOOR", "option_entry_cycler", 
       { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
@@ -46,8 +46,8 @@ function onInit()
       OptionsManager.registerOption2("RNDS", false, "option_header_combat", "option_label_RNDS", "option_entry_cycler", 
               { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
     -- PCs initiative type
-    OptionsManager.registerOption2("PCVNPCINIT", false, "option_header_combat", "option_label_PCVNPCINIT", "option_entry_cycler", 
-        { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+    -- OptionsManager.registerOption2("PCVNPCINIT", false, "option_header_combat", "option_label_PCVNPCINIT", "option_entry_cycler", 
+    --     { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
   
   
   
@@ -81,12 +81,12 @@ function onInit()
     -- TODO: consider changing HD/HP values or removing this
     OptionsManager.registerOption2("HRNH", false, "option_header_houserule", "option_label_HRNH", "option_entry_cycler", 
         { labels = "option_val_max|option_val_random|option_val_80plus", values = "max|random|80plus", baselabel = "option_val_off", baseval = "off", default = "random" });
-    -- TODO: look into ADD/OSRIC init to see if it occurs every round by default
-    OptionsManager.registerOption2("HouseRule_InitEachRound", false, "option_header_houserule", "option_label_HOUSE_RULE_INIT_EACH_ROUND", "option_entry_cycler", 
-        { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+    -- auto-init
+    -- OptionsManager.registerOption2("HouseRule_InitEachRound", false, "option_header_houserule", "option_label_HOUSE_RULE_INIT_EACH_ROUND", "option_entry_cycler", 
+    --     { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
     -- TODO: see if there's anything in 1e or OSRIC to support crits
-        OptionsManager.registerOption2("HouseRule_CRIT_TYPE", false, "option_header_houserule", "option_label_HR_CRIT", "option_entry_cycler", 
-        { labels = "option_val_hr_crit_maxdmg|option_val_hr_crit_timestwo|option_val_hr_crit_none", values = "max|timestwo|none", baselabel = "option_val_hr_crit_doubledice", baseval = "doubledice", default = "doubledice" });
+        -- OptionsManager.registerOption2("HouseRule_CRIT_TYPE", false, "option_header_houserule", "option_label_HR_CRIT", "option_entry_cycler", 
+        -- { labels = "option_val_hr_crit_maxdmg|option_val_hr_crit_timestwo|option_val_hr_crit_none", values = "max|timestwo|none", baselabel = "option_val_hr_crit_doubledice", baseval = "doubledice", default = "doubledice" });
   
   
 
@@ -155,8 +155,8 @@ function onInit()
   end
   
   -- recheck encumbrance settings with value changed.
-  function updateForEncumbranceOption()
-    for _,nodeChar in pairs(DB.getChildren("charsheet")) do
-      CharManager.calcWeightCarried(nodeChar)
-    end
-  end
+  -- function updateForEncumbranceOption()
+  --   for _,nodeChar in pairs(DB.getChildren("charsheet")) do
+  --     CharManager.calcWeightCarried(nodeChar)
+  --   end
+  -- end

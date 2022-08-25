@@ -32,15 +32,19 @@
     
     <!-- High-level scripts -->
     <script name="DataCommonADND1e" file="scripts/data_common_adnd1e.lua" />
+    <script name="Options5E" file="scripts/data_options_5e.lua" />
     <script name="OptionsADND" file="scripts/data_options_adnd.lua" />
+    <script name="OptionsADND1e" file="scripts/data_options_adnd1e.lua" />
     <script name="ActionInitManagerADND1e" file="scripts/manager_action_init_adnd1e.lua" />
     <script name="ActionSurpriseManagerADND1e" file="scripts/manager_action_surprise_adnd1e.lua" />
-    <script name="ADND1eManager" file="scripts/manager_adnd1e.lua" />
+    <script name="OptionsADND1e" file="scripts/data_options_adnd1e.lua" />
     <script name="CombatManagerADND1e" file="scripts/manager_combat_adnd1e.lua" />
     <script name="FightsSavesAsManager" file="scripts/manager_fights_saves_as.lua" />
     <script name="NpcClickChooser" file="campaign/scripts/npc_click_chooser.lua" />
+    <script name="CharEncumbranceManagerADND1e" file="scripts/manager_char_encumbrance_adnd1e.lua" />
 
     <includefile source="strings/strings_adnd1e.xml" />
+    <includefile source="strings/strings_utility.xml" />
   </base>
     
 </root>

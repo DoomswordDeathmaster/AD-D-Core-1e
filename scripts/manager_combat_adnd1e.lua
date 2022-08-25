@@ -28,6 +28,7 @@ function onInit()
     CombatManagerADND.handleInitiativeChange = handleInitiativeChange;
     OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_CHANGEINIT, handleInitiativeChange);
 
+    -- 
     CombatManager.setCustomCombatReset(resetInitNew);
     CombatManager.setCustomRoundStart(onRoundStartNew);
     CombatManager.setCustomSort(sortfuncADnDNew);
@@ -37,6 +38,7 @@ end
 function rollRandomInitNew(nMod, bADV)
     --if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
         -- no modifiers
+        -- TODO: decide i nMod is good, given that zomies have a 99
     nMod = 0;
     --end
     Debug.console("rollRandomInitNew");
@@ -356,6 +358,7 @@ function handleInitiativeChange(msgOOB)
     end
 end
 
+-- 1e/OSRIC alwaysd does this
 function resetInitNew()
     -- set last init results to 0
     PC_LASTINIT = 0;

@@ -1,0 +1,25 @@
+Group all initiative
+grouped init swap
+assign init based on character who rolled
+remove critical hits
+d6 initiative die
+remove pc vs npc init
+encumbrance mandatory
+remove armor dp
+remove all initiative mods
+auto-reset initiative every round
+enable delay only for OSRIC
+remove ability checks
+remove kits
+make currency weight mandatory
+remove auto-init options
+remove critical hit/fumble tables
+
+
+need to deal with monsters that are automatically set to 99 initiative
+need to deal with 10 segment rounds
+need to deal with death's door
+need to bring useful changes into options and house rules mod
+
+
+
