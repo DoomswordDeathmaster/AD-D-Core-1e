@@ -16,9 +16,11 @@ function onInit()
     OptionsManager.registerOption2("PSMN", false, "option_header_game", "option_label_PSMN", "option_entry_cycler", 
         { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
   
-    -- change values to off/on
-    -- OptionsManager.registerOption2("INIT", false, "option_header_combat", "option_label_INIT", "option_entry_cycler", 
-    --     { labels = "option_val_off", values = "on", baselabel = "option_val_on", baseval = "on", default = "on" });
+    -- auto NPC initiative
+    -- change values to off/on, because grouped initiative always occurs in 1e/OSRIC
+    OptionsManager.registerOption2("autoNpcInitiative", false, "option_header_combat", "option_label_autoNpcInitiative", "option_entry_cycler", 
+        { labels = "option_val_off", values = "on", baselabel = "option_val_on", baseval = "on", default = "on" });
+    
     OptionsManager.registerOption2("NPCD", false, "option_header_combat", "option_label_NPCD", "option_entry_cycler", 
         { labels = "option_val_fixed", values = "fixed", baselabel = "option_val_variable", baseval = "off", default = "off" });
     OptionsManager.registerOption2("BARC", false, "option_header_combat", "option_label_BARC", "option_entry_cycler", 

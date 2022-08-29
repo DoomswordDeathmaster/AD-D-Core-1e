@@ -22,19 +22,26 @@ function onInit()
     
     -- GAME
     -- use Fighter Handbook armor damagepoint rules
+    -- deprecate option
     -- OptionsManager.registerOption2("OPTIONAL_ARMORDP", false, "option_header_adnd_options", "option_label_OPTIONAL_ARMORDB", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
   
     -- encumbrance should be mandatory
+    -- deprecate option
     -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
 
-    -- TODO: doesn't even exists in thed ruleset, or seems not to
+    -- TODO: ? doesn't even exists in the ruleset, or seems not to
+    -- deprecate option and test it
     -- OptionsManager.registerOption2("OPTIONAL_ENCUMBRANCE_COIN", false, "option_header_adnd_options", "option_label_OPTIONAL_ENCUMBRANCE_COIN", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+
     -- TODO: look into 1e and OSRIC death
     OptionsManager.registerOption2("HouseRule_DeathsDoor", false, "option_header_adnd_options", "option_label_ADND_DEATHSDOOR", "option_entry_cycler", 
       { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+    
+    -- size mods don't exist in 1e or OSRIC
+    -- deprecate option and functions
     -- OptionsManager.registerOption2("OPTIONAL_INIT_SIZEMODS", false, "option_header_adnd_options", "option_label_OPTIONAL_INIT_SIZEMODS", "option_entry_cycler", 
     --   { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
   
@@ -42,15 +49,16 @@ function onInit()
     -- COMBAT 
     OptionsManager.registerOption2("CT_SKIP_DEAD_NPC", false, "option_header_combat", "option_label_CT_SKIP_DEAD_NPC", "option_entry_cycler", 
               { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+
     -- re-register the version of this that CoreRPG does so that we can set the default ON since AD&D uses re-roll each round also --celestian
-      OptionsManager.registerOption2("RNDS", false, "option_header_combat", "option_label_RNDS", "option_entry_cycler", 
+    OptionsManager.registerOption2("RNDS", false, "option_header_combat", "option_label_RNDS", "option_entry_cycler", 
               { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
-    -- PCs initiative type
+
+    -- PC vs NPC initiative type
+    -- doesn't exist in 1e/OSRIC and seems to be of limited usefulness
+    -- deprecate option
     -- OptionsManager.registerOption2("PCVNPCINIT", false, "option_header_combat", "option_label_PCVNPCINIT", "option_entry_cycler", 
     --     { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
-  
-  
-  
   
     -- TOKEN OPTIONS 
     -- show npc effects to PC
@@ -74,24 +82,21 @@ function onInit()
     OptionsManager.registerOption2("TOKEN_OPTION_INIT", false, "option_header_token", "option_label_TOKEN_OPTION_INIT", "option_entry_cycler", 
         { labels = "option_val_has_init_token2|option_val_has_init_token3|option_val_has_init_token4|option_val_has_init_token5|option_val_has_init_token6", values = "2|3|4|5|6", baselabel = "option_val_has_init_token1", baseval = "1", default = "1" });
   
-    
-    
-    
     --- HOUSE RULES
     -- TODO: consider changing HD/HP values or removing this
     OptionsManager.registerOption2("HRNH", false, "option_header_houserule", "option_label_HRNH", "option_entry_cycler", 
         { labels = "option_val_max|option_val_random|option_val_80plus", values = "max|random|80plus", baselabel = "option_val_off", baseval = "off", default = "random" });
-    -- auto-init
+
+    -- init each round
+    -- always happens in 1e/OSRIC
+    -- deprecate option
     -- OptionsManager.registerOption2("HouseRule_InitEachRound", false, "option_header_houserule", "option_label_HOUSE_RULE_INIT_EACH_ROUND", "option_entry_cycler", 
     --     { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+
     -- TODO: see if there's anything in 1e or OSRIC to support crits
         -- OptionsManager.registerOption2("HouseRule_CRIT_TYPE", false, "option_header_houserule", "option_label_HR_CRIT", "option_entry_cycler", 
         -- { labels = "option_val_hr_crit_maxdmg|option_val_hr_crit_timestwo|option_val_hr_crit_none", values = "max|timestwo|none", baselabel = "option_val_hr_crit_doubledice", baseval = "doubledice", default = "doubledice" });
   
-  
-
-
-
     -- this is not a option in AD&D 2e?
     -- OptionsManager.registerOption2("HouseRule_ASCENDING_AC", false, "option_header_houserule", "option_label_HR_ASENDING_AC", "option_entry_cycler", 
         -- { labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });

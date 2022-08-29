@@ -10,7 +10,7 @@
             <default>9</default>
             <font>bold20</font>
             <frame name="abilityscore_box" />
-            
+            <!-- will be deprecating -->
             <script>
                 function onInit()
                     if OptionsManager.getOption("abilityCheckAllow") == "on" then

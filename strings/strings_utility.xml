@@ -386,7 +386,9 @@
 	<string name="option_val_raw">Raw</string>
 	
 	<!-- Options - Used in most rulesets, but not in base CoreRPG -->
-	<!-- <string name="option_label_INIT">Combat: Auto NPC initiative</string> -->
+	<!-- change the name on this because it was maddeningly confusing -->
+	<string name="option_label_autoNpcInitiative">Combat: Auto NPC initiative</string>
+	
 	<string name="option_label_RMMT">Target: Remove on miss</string>
 	<string name="option_label_PSMN">Party: Show characters to clients</string>
 	<string name="option_label_SHRR">Chat: Show results to client</string>
@@ -398,6 +400,7 @@
 
     <!-- Critical hit and fumble tables -->
 	<!-- <string name="option_label_HRFC">Attack: Fumble/Crit Tables</string> -->
+
     <!-- Doesn't exist in 2e, though it is included in onRoundStart -->
 	<string name="option_label_HRIR">Combat: Roll init each round</string>
 	<string name="option_label_HRST">Combat: Auto stabilization rolls</string>

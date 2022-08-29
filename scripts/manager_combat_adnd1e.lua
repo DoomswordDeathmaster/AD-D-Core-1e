@@ -50,7 +50,8 @@ function rollEntryInitNew(nodeEntry)
     --local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
     --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
     --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
-    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
+    local bOptInitGroupingSwap = (OptionsManager.getOption("useOsricInitiativeSwap") == 'on');
+    local bOptAutoNpcInitiative = (OptionsManager.getOption("autoNpcInitiative") == 'on');
 
     Debug.console("nodeEntry", nodeEntry);
 
@@ -79,7 +80,7 @@ function rollEntryInitNew(nodeEntry)
 	-- PC/NPC init
 	local sClass, sRecord = DB.getValue(nodeEntry, "link", "", "");
 
-    -- it's a pc
+    -- it's a PC
 	if sClass == "charsheet" then
         Debug.console("PC Init");
         local nodeChar = DB.findNode(sRecord);
@@ -108,6 +109,7 @@ function rollEntryInitNew(nodeEntry)
         -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
+    -- it's an NPC
     else
         Debug.console("NPC Init");
         -- it's an npc
@@ -146,64 +148,62 @@ function rollEntryInitNew(nodeEntry)
             -- end
             
             --[[ IF we ignore size/mods, clear nInit ]]
-            if OptionsManager.getOption("OPTIONAL_INIT_SIZEMODS") ~= "on" then
-                nInit = 0;
-            end
+            -- if OptionsManager.getOption("OPTIONAL_INIT_SIZEMODS") ~= "on" then
+            --     nInit = 0;
+            -- end
             
-            -- For NPCs, if NPC init option is not group, then roll unique initiative
-            local sOptINIT = OptionsManager.getOption("INIT");
+            -- TODO - TEST TO MAKE SURE ALL INIT STILL WORKS
+            -- if bOptAutoNpcInitiative then
+            --     -- if they have custom init then we use it.
+            --     local nInitResult = rollRandomInitOrig(nInit, bADV);
+
+            --     DB.setValue(nodeEntry, "initresult", "number", nInitResult);
+            --     DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
+            -- else
+            --     -- For NPCs with group option enabled
+            --     -- Get the entry's database node name and creature name
+            --     local sStripName = CombatManager.stripCreatureNumber(DB.getValue(nodeEntry, "name", ""));
+
+            --     if sStripName == "" then
+            --         local nInitResult = rollRandomInitOrig(nInit, bADV);
+
+            --         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
+            --         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
+
+            --         return;
+            --     end
             
-            if sOptINIT ~= "group" then
-                -- if they have custom init then we use it.
-                local nInitResult = rollRandomInitOrig(nInit, bADV);
+            --     -- Iterate through list looking for other creature's with same name and faction
+            --     local nLastInit = nil;
+            --     local sEntryFaction = DB.getValue(nodeEntry, "friendfoe", "");
 
-                DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-                DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-            else
-                -- For NPCs with group option enabled
-                -- Get the entry's database node name and creature name
-                local sStripName = CombatManager.stripCreatureNumber(DB.getValue(nodeEntry, "name", ""));
-
-                if sStripName == "" then
-                    local nInitResult = rollRandomInitOrig(nInit, bADV);
-
-                    DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-                    DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-
-                    return;
-                end
-            
-                -- Iterate through list looking for other creature's with same name and faction
-                local nLastInit = nil;
-                local sEntryFaction = DB.getValue(nodeEntry, "friendfoe", "");
-
-                for _,v in pairs(CombatManager.getCombatantNodes()) do
-                    if v.getName() ~= nodeEntry.getName() then
-                        if DB.getValue(v, "friendfoe", "") == sEntryFaction then
-                            local sTemp = CombatManager.stripCreatureNumber(DB.getValue(v, "name", ""));
+            --     for _,v in pairs(CombatManager.getCombatantNodes()) do
+            --         if v.getName() ~= nodeEntry.getName() then
+            --             if DB.getValue(v, "friendfoe", "") == sEntryFaction then
+            --                 local sTemp = CombatManager.stripCreatureNumber(DB.getValue(v, "name", ""));
                             
-                            if sTemp == sStripName then
-                                local nChildInit = DB.getValue(v, "initresult", 0);
+            --                 if sTemp == sStripName then
+            --                     local nChildInit = DB.getValue(v, "initresult", 0);
                                 
-                                if nChildInit ~= -10000 then
-                                    nLastInit = nChildInit;
-                                end
-                            end
-                        end
-                    end
-                end
+            --                     if nChildInit ~= -10000 then
+            --                         nLastInit = nChildInit;
+            --                     end
+            --                 end
+            --             end
+            --         end
+            --     end
 
-                -- If we found similar creatures, then match the initiative of the last one found
-                if nLastInit then
-                    DB.setValue(nodeEntry, "initresult", "number", nLastInit);
-                    DB.setValue(nodeEntry, "initresult_d6", "number", nLastInit);
-                else
-                    local nInitResult = rollRandomInitOrig(nInit, bADV);
+            --     -- If we found similar creatures, then match the initiative of the last one found
+            --     if nLastInit then
+            --         DB.setValue(nodeEntry, "initresult", "number", nLastInit);
+            --         DB.setValue(nodeEntry, "initresult_d6", "number", nLastInit);
+            --     else
+            --         local nInitResult = rollRandomInitOrig(nInit, bADV);
 
-                    DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-                    DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-                end
-            end
+            --         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
+            --         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
+            --     end
+            -- end
         --end
     end
 
@@ -228,14 +228,14 @@ function rollEntryInitNew(nodeEntry)
         --     end
         -- end
 
-        -- init grouping swap
-        if bOptInitGroupingSwap then
-            Debug.console("SWAP!");
-            --if bOptPCVNPCINIT then --or (sOptInitGrouping ~= "neither") then
-                applyInitResultToAllPCs(NPC_LASTINIT);
-                applyInitResultToAllNPCs(PC_LASTINIT);
-            --end
-        end
+    -- init grouping swap
+    if bOptInitGroupingSwap then
+        Debug.console("SWAP!");
+        --if bOptPCVNPCINIT then --or (sOptInitGrouping ~= "neither") then
+            applyInitResultToAllPCs(NPC_LASTINIT);
+            applyInitResultToAllNPCs(PC_LASTINIT);
+        --end
+    end
     --end
 end
 
@@ -381,6 +381,14 @@ function onRoundStartNew(nCurrent)
         resetCombatantInit(nodeCT);
     end
     --end
+
+    if bOptAutoNpcInitiative then
+        -- if they have custom init then we use it.
+        local nInitResult = rollRandomInitOrig(nInit, bADV);
+
+        DB.setValue(nodeEntry, "initresult", "number", nInitResult);
+        DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
+    end
 end
 
 --decide what to do with this

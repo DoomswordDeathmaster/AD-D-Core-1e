@@ -41,7 +41,7 @@ function handleApplyInitNew(msgOOB)
     local nTotal = tonumber(msgOOB.nTotal) or 0;
 
     --local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
-    local bOptInitGroupingSwap = (OptionsManager.getOption("initiativeOsricSwap") == 'on');
+    local bOptInitGroupingSwap = (OptionsManager.getOption("useOsricInitiativeSwap") == 'on');
 
     -- grouped initiative options
     --if bOptPCVNPCINIT or (sOptInitGrouping ~= "neither") then
