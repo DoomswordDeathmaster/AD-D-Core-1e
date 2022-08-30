@@ -1,7 +1,7 @@
 Group all initiative
 grouped init swap
 assign init based on character who rolled
-remove critical hits
+deprecating critical hits
 d6 initiative die
 remove pc vs npc init
 encumbrance mandatory
@@ -20,5 +20,19 @@ need to deal with monsters that are automatically set to 99 initiative
 need to deal with 10 segment rounds
 need to deal with death's door
 need to bring useful changes into options and house rules mod
+need to compare 2e changes from new ruleset version
+
+
+
+look at defaults for all options I'm deprecating, to make sure the default is what's right for 1e
+
+tests
+dm roll init
+player roll init
+init swap
+character init delay
+allow ability checks
+
+
 
 

@@ -5,7 +5,7 @@ end
 function registerOptions()
 	-- Allow Ability Checks
 	-- nothing in OSRIC or 1e for this
-	-- mark as deprecating
+	-- Set this to deprecating/use options and house rules extension instead
 	OptionsManager.registerOption2("abilityCheckAllow", false, "option_header_adnd1e", "option_label_adnd1e_ability_check_allow", "option_entry_cycler", 
 		{ labels = "option_val_off", values = "off", baselabel = "option_val_on", baseval = "on", default = "on" });
 
