@@ -47,6 +47,10 @@ function onInit()
 	-- default coin weight, 10 coins = 1 pound, 1e, ouch
 	DataCommonADND.nDefaultCoinWeight = 0.1
 
+	-- default initiative die
+	local initiativeDieNumber = 6
+	DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber
+
 	-- aStrength[abilityScore]={hit adj, dam adj, weight allow, max press, open doors, bend bars}
 	aStrength[1] = {-3, -1, -350, 0, "1(0)", 0, 2, 3, 4, 5, 7}
 	aStrength[2] = {-3, -1, -350, 0, "1(0)", 0, 2, 3, 4, 5, 7}

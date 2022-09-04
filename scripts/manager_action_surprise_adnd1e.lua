@@ -1,9 +1,9 @@
 function onInit()
-    getRollOrig = ActionSurprise.getRoll;
-	ActionSurprise.getRoll = getRollNew;
+    getRollOrig = ActionSurprise.getRoll
+    ActionSurprise.getRoll = getRollNew
 end
 
-function getRollNew(rActor,nTargetDC, bSecretRoll)
+function getRollNew(rActor, nTargetDC, bSecretRoll)
     --sOptSurpriseDie = OptionsManager.getOption("surpriseDie");
 
     -- if sOptSurpriseDie == "d6" then
@@ -13,46 +13,46 @@ function getRollNew(rActor,nTargetDC, bSecretRoll)
     -- elseif sOptSurpriseDie == "d12" then
     --     DataCommonADND.aDefaultSurpriseDice = {"d12"};
     -- end
-    
-    DataCommonADND.aDefaultSurpriseDice = {"d6"};
 
-    local rRoll = {};
-    rRoll.sType = "surprise";
-    rRoll.nMod = 0;
-    
-    local aDice = DB.getValue(nodeChar,"surprise.dice");
+    DataCommonADND.aDefaultSurpriseDice = {"d6"}
+
+    local rRoll = {}
+    rRoll.sType = "surprise"
+    rRoll.nMod = 0
+
+    local aDice = DB.getValue(nodeChar, "surprise.dice")
 
     if aDice == nil then
-        aDice = DataCommonADND.aDefaultSurpriseDice;
+        aDice = DataCommonADND.aDefaultSurpriseDice
     end
-        
-    rRoll.aDice = aDice;
+
+    rRoll.aDice = aDice
 
     if (nTargetDC == nil) then
-        local node = CombatManagerADND.getCTFromActor(rActor);
-        nTargetDC = getSurpriseTarget(node);  
+        local node = CombatManagerADND.getCTFromActor(rActor)
+        nTargetDC = getSurpriseTarget(node)
     end
 
-    rRoll.sDesc = "[CHECK] ";
-    rRoll.bSecret = bSecretRoll;
-    rRoll.nTarget = nTargetDC;
-    
-    return rRoll;
+    rRoll.sDesc = "[CHECK] "
+    rRoll.bSecret = bSecretRoll
+    rRoll.nTarget = nTargetDC
+
+    return rRoll
 end
 
 -- return the current surprise value for this target.
 function getSurpriseTarget(node)
     -- TODO: look at this more carefully, in terms of surprise base, hardcoded as 2, and the getvalue
-    local nBase = DB.getValue(node,"surprise.base",3);
-    local nMod = DB.getValue(node,"surprise.mod",0);
-    local nTmpMod = DB.getValue(node,"surprise.tempmod",0);
-    local nTotal = nBase + nMod + nTmpMod;
+    local nBase = DB.getValue(node, "surprise.base", 3)
+    local nMod = DB.getValue(node, "surprise.mod", 0)
+    local nTmpMod = DB.getValue(node, "surprise.tempmod", 0)
+    local nTotal = nBase + nMod + nTmpMod
 
     return nTotal
 end
 
 function performRoll(draginfo, rActor, nTargetDC, bSecretRoll)
-  local rRoll = getRollNew(rActor, nTargetDC, bSecretRoll);
-  
-  ActionsManager.performAction(draginfo, rActor, rRoll);
+    local rRoll = getRollNew(rActor, nTargetDC, bSecretRoll)
+
+    ActionsManager.performAction(draginfo, rActor, rRoll)
 end

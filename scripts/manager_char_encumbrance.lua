@@ -1,11 +1,10 @@
--- 
--- Please see the license.html file included with this distribution for 
+--
+-- Please see the license.html file included with this distribution for
 -- attribution and copyright information.
 --
 
 -- ***** copied from CoreRpg (because it wasn't working otherwise) to remove the options of turning off coin encumbrance, todo: decide if it's worth it in order to remove the option to turn off
-local _tStandardSupportedRulesets =
-{
+local _tStandardSupportedRulesets = {
 	"CoreRPG",
 	"3.5E",
 	"4E",
@@ -23,8 +22,8 @@ local _tStandardSupportedRulesets =
 	"MCC RPG",
 	"PFRPG",
 	"Symbaroum",
-	"WOIN",
-};
+	"WOIN"
+}
 
 -- Known Custom Overrides
 --		2E
@@ -54,53 +53,59 @@ local _tStandardSupportedRulesets =
 --	Initialization and Cleanup
 --
 
-local _bInitComplete = false;
-local _bDesktopInitComplete = false;
+local _bInitComplete = false
+local _bDesktopInitComplete = false
 function onInit()
-	Debug.console("managercharencumbrance", "onInit");
+	Debug.console("managercharencumbrance", "onInit")
 	if StringManager.contains(_tStandardSupportedRulesets, Interface.getRuleset()) then
-		CharEncumbranceManager.addStandardCalc();
+		CharEncumbranceManager.addStandardCalc()
 	end
-	Interface.onDesktopInit = onDesktopInit;
-	_bInitComplete = true;
+	Interface.onDesktopInit = onDesktopInit
+	_bInitComplete = true
 end
 function onDesktopInit()
-	CharEncumbranceManager.performInit();
-	_bDesktopInitComplete = true;
+	CharEncumbranceManager.performInit()
+	_bDesktopInitComplete = true
 end
 function onClose()
 	if Session.IsHost and CharEncumbranceManager.isEnabled() then
-		OptionsManager.unregisterCallback("CURR", CharEncumbranceManager.onCurrencyOptionUpdate);
-		CurrencyManager.unregisterCallback(CharEncumbranceManager.onCurrencyUpdate);
-		CharEncumbranceManager.disableCharCurrencyHandlers();
+		OptionsManager.unregisterCallback("CURR", CharEncumbranceManager.onCurrencyOptionUpdate)
+		CurrencyManager.unregisterCallback(CharEncumbranceManager.onCurrencyUpdate)
+		CharEncumbranceManager.disableCharCurrencyHandlers()
 	end
 end
 
-local _bInitialized = false;
+local _bInitialized = false
 function performInit()
-	Debug.console("managercharencumbrance", "performInit");
+	Debug.console("managercharencumbrance", "performInit")
 	if not _bInitComplete then
-		return;
+		return
 	end
 
 	if CharEncumbranceManager.isEnabled() then
 		if _bInitialized then
-			return;
+			return
 		end
 
 		-- todo: comment out to deprecate, if desired
-		OptionsManager.registerOption2("CURR", false, "option_header_houserule", "option_label_CURR", "option_entry_cycler", 
-				{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+		OptionsManager.registerOption2(
+			"CURR",
+			false,
+			"option_header_houserule",
+			"option_label_CURR",
+			"option_entry_cycler",
+			{labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on"}
+		)
 
 		if Session.IsHost then
-			OptionsManager.registerCallback("CURR", CharEncumbranceManager.onCurrencyOptionUpdate);
-			CurrencyManager.registerCallback(CharEncumbranceManager.onCurrencyUpdate);
-			CharEncumbranceManager.enableCharCurrencyHandlers();
+			OptionsManager.registerCallback("CURR", CharEncumbranceManager.onCurrencyOptionUpdate)
+			CurrencyManager.registerCallback(CharEncumbranceManager.onCurrencyUpdate)
+			CharEncumbranceManager.enableCharCurrencyHandlers()
 
-			CharEncumbranceManager.updateAllCharacters();
+			CharEncumbranceManager.updateAllCharacters()
 		end
 
-		_bInitialized = true;
+		_bInitialized = true
 	end
 end
 
@@ -108,36 +113,36 @@ end
 --	Settings
 --
 
-local _fnEncumbranceCalc = nil;
+local _fnEncumbranceCalc = nil
 function addCustomCalc(fnEncumbranceCalc)
 	if _bInitialized then
 		ChatManager.SystemMessage("CharEncumbranceManager.addDefaultEncumbranceCalc can only be called once.")
-		return;
+		return
 	end
-	_fnEncumbranceCalc = fnEncumbranceCalc;
-	performInit();
+	_fnEncumbranceCalc = fnEncumbranceCalc
+	performInit()
 end
 function addStandardCalc()
-	CharEncumbranceManager.addCustomCalc(CharEncumbranceManager.calcDefaultEncumbrance);
+	CharEncumbranceManager.addCustomCalc(CharEncumbranceManager.calcDefaultEncumbrance)
 end
 function isEnabled()
-	return (_fnEncumbranceCalc ~= nil);
+	return (_fnEncumbranceCalc ~= nil)
 end
 
-local _sEncumbranceField = "encumbrance.load";
+local _sEncumbranceField = "encumbrance.load"
 function setEncumbranceField(sFieldName)
-	_sEncumbranceField = sFieldName;
+	_sEncumbranceField = sFieldName
 end
 function getEncumbranceField()
-	return _sEncumbranceField;
+	return _sEncumbranceField
 end
 
-local _tCustomCurrencyFields = nil;
+local _tCustomCurrencyFields = nil
 function setCurrencyUpdateFields(tCustomCurrencyFields)
-	_tCustomCurrencyFields = tCustomCurrencyFields;
+	_tCustomCurrencyFields = tCustomCurrencyFields
 end
 function getCurrencyUpdateFields()
-	return _tCustomCurrencyFields or _tDefaultCurrencyFields;
+	return _tCustomCurrencyFields or _tDefaultCurrencyFields
 end
 
 --
@@ -145,69 +150,69 @@ end
 --
 
 function enableCharCurrencyHandlers()
-	local tItemLists = ItemManager.getInventoryPaths("charsheet");
-	local tItemFields = ItemManager.getEncumbranceFields("charsheet");
-	for _,sList in ipairs(tItemLists) do
-		local sListPath = "charsheet.*." .. sList;
-		for _,sField in ipairs(tItemFields) do
-			DB.addHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate);
+	local tItemLists = ItemManager.getInventoryPaths("charsheet")
+	local tItemFields = ItemManager.getEncumbranceFields("charsheet")
+	for _, sList in ipairs(tItemLists) do
+		local sListPath = "charsheet.*." .. sList
+		for _, sField in ipairs(tItemFields) do
+			DB.addHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate)
 		end
-		DB.addHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete);
+		DB.addHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete)
 	end
 
-	local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet");
-	local tCurrencyFields = CurrencyManager.getEncumbranceFields("charsheet");
-	for _,sList in ipairs(tCurrencyPaths) do
-		local sListPath = "charsheet.*." .. sList;
-		for _,sField in ipairs(tCurrencyFields) do
-			DB.addHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate);
+	local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet")
+	local tCurrencyFields = CurrencyManager.getEncumbranceFields("charsheet")
+	for _, sList in ipairs(tCurrencyPaths) do
+		local sListPath = "charsheet.*." .. sList
+		for _, sField in ipairs(tCurrencyFields) do
+			DB.addHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate)
 		end
-		DB.addHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete);
+		DB.addHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete)
 	end
 end
 function disableCharCurrencyHandlers()
-	local tItemLists = ItemManager.getInventoryPaths("charsheet");
-	local tItemFields = ItemManager.getEncumbranceFields("charsheet");
-	for _,sList in ipairs(tItemLists) do
-		local sListPath = "charsheet.*." .. sList;
-		for _,sField in ipairs(tItemFields) do
-			DB.removeHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate);
+	local tItemLists = ItemManager.getInventoryPaths("charsheet")
+	local tItemFields = ItemManager.getEncumbranceFields("charsheet")
+	for _, sList in ipairs(tItemLists) do
+		local sListPath = "charsheet.*." .. sList
+		for _, sField in ipairs(tItemFields) do
+			DB.removeHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate)
 		end
-		DB.removeHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete);
+		DB.removeHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete)
 	end
 
-	local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet");
-	local tCurrencyFields = CurrencyManager.getEncumbranceFields("charsheet");
-	for _,sList in ipairs(tCurrencyPaths) do
-		local sListPath = "charsheet.*." .. sList;
-		for _,sField in ipairs(tCurrencyFields) do
-			DB.removeHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate);
+	local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet")
+	local tCurrencyFields = CurrencyManager.getEncumbranceFields("charsheet")
+	for _, sList in ipairs(tCurrencyPaths) do
+		local sListPath = "charsheet.*." .. sList
+		for _, sField in ipairs(tCurrencyFields) do
+			DB.removeHandler(sListPath .. ".*." .. sField, "onUpdate", CharEncumbranceManager.onCharItemFieldUpdate)
 		end
-		DB.removeHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete);
+		DB.removeHandler(sListPath, "onChildDeleted", CharEncumbranceManager.onCharItemDelete)
 	end
 end
 
 function onCurrencyOptionUpdate()
-	CharEncumbranceManager.updateAllCharacters();
+	CharEncumbranceManager.updateAllCharacters()
 end
 function onCurrencyUpdate()
-	CharEncumbranceManager.updateAllCharacters();
+	CharEncumbranceManager.updateAllCharacters()
 end
 function onCharItemFieldUpdate(nodeItem)
-	local nodeChar = DB.getChild(nodeItem, "....");
-	CharEncumbranceManager.updateEncumbrance(nodeChar);
+	local nodeChar = DB.getChild(nodeItem, "....")
+	CharEncumbranceManager.updateEncumbrance(nodeChar)
 end
 function onCharItemDelete(nodeInventory)
-	local nodeChar = DB.getChild(nodeInventory, "..");
-	CharEncumbranceManager.updateEncumbrance(nodeChar);
+	local nodeChar = DB.getChild(nodeInventory, "..")
+	CharEncumbranceManager.updateEncumbrance(nodeChar)
 end
 
 function updateAllCharacters()
-	RecordManager.callForEachRecord("charsheet", CharEncumbranceManager.updateEncumbrance);
+	RecordManager.callForEachRecord("charsheet", CharEncumbranceManager.updateEncumbrance)
 end
 function updateEncumbrance(nodeChar)
 	if _fnEncumbranceCalc then
-		_fnEncumbranceCalc(nodeChar);
+		_fnEncumbranceCalc(nodeChar)
 	end
 end
 
@@ -216,54 +221,54 @@ end
 --
 
 function calcDefaultEncumbrance(nodeChar)
-	local nEncumbrance = CharEncumbranceManager.calcDefaultInventoryEncumbrance(nodeChar);
-	nEncumbrance = nEncumbrance + CharEncumbranceManager.calcDefaultCurrencyEncumbrance(nodeChar);
-	CharEncumbranceManager.setDefaultEncumbranceValue(nodeChar, nEncumbrance);
+	local nEncumbrance = CharEncumbranceManager.calcDefaultInventoryEncumbrance(nodeChar)
+	nEncumbrance = nEncumbrance + CharEncumbranceManager.calcDefaultCurrencyEncumbrance(nodeChar)
+	CharEncumbranceManager.setDefaultEncumbranceValue(nodeChar, nEncumbrance)
 end
 
 function calcDefaultInventoryEncumbrance(nodeChar)
-	local nInvTotal = 0;
-	
-	local nCount, nWeight;
+	local nInvTotal = 0
 
-	local tInventoryPaths = ItemManager.getInventoryPaths("charsheet");
-	for _,sList in ipairs(tInventoryPaths) do
-		for _,nodeItem in pairs(DB.getChildren(nodeChar, sList)) do
+	local nCount, nWeight
+
+	local tInventoryPaths = ItemManager.getInventoryPaths("charsheet")
+	for _, sList in ipairs(tInventoryPaths) do
+		for _, nodeItem in pairs(DB.getChildren(nodeChar, sList)) do
 			if DB.getValue(nodeItem, "carried", 0) ~= 0 then
-				nCount = DB.getValue(nodeItem, "count", 0);
-				nWeight = DB.getValue(nodeItem, "weight", 0);
-				
-				nInvTotal = nInvTotal + (nCount * nWeight);
+				nCount = DB.getValue(nodeItem, "count", 0)
+				nWeight = DB.getValue(nodeItem, "weight", 0)
+
+				nInvTotal = nInvTotal + (nCount * nWeight)
 			end
 		end
 	end
 
-	return nInvTotal;
+	return nInvTotal
 end
 
 function calcDefaultCurrencyEncumbrance(nodeChar)
-	local nCurrTotal = 0;
+	local nCurrTotal = 0
 
 	if OptionsManager.isOption("CURR", "on") then
-		local sCurrency;
-		local nCurrencyWeight;
-		local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet");
-		for _,sList in ipairs(tCurrencyPaths) do
-			for _,vNode in pairs(DB.getChildren(nodeChar, sList)) do
-				sCurrency = DB.getValue(vNode, "name", "");
+		local sCurrency
+		local nCurrencyWeight
+		local tCurrencyPaths = CurrencyManager.getCurrencyPaths("charsheet")
+		for _, sList in ipairs(tCurrencyPaths) do
+			for _, vNode in pairs(DB.getChildren(nodeChar, sList)) do
+				sCurrency = DB.getValue(vNode, "name", "")
 
 				if (CurrencyManager.getCurrencyMatch(sCurrency) or "") ~= "" then
-					nCurrencyWeight = DB.getValue(vNode, "amount", 0) * CurrencyManager.getCurrencyWeight(sCurrency);
-					nCurrTotal = nCurrTotal + nCurrencyWeight;
+					nCurrencyWeight = DB.getValue(vNode, "amount", 0) * CurrencyManager.getCurrencyWeight(sCurrency)
+					nCurrTotal = nCurrTotal + nCurrencyWeight
 				end
 			end
 		end
 	end
 
-	return nCurrTotal;
+	return nCurrTotal
 end
 
 function setDefaultEncumbranceValue(nodeChar, nEncumbrance)
-	local sField = CharEncumbranceManager.getEncumbranceField();
-	DB.setValue(nodeChar, sField, "number", math.floor(nEncumbrance));
+	local sField = CharEncumbranceManager.getEncumbranceField()
+	DB.setValue(nodeChar, sField, "number", math.floor(nEncumbrance))
 end

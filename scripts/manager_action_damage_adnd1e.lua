@@ -1,7 +1,7 @@
 function onInit()
     Debug.console("manager_action_damage_adnd1e.lua", "init")
-    ActionDamage.applyDamage = applyDamageNew;
-    ActionDamage.modDamage = modDamageNew;
+    ActionDamage.applyDamage = applyDamageNew
+    ActionDamage.modDamage = modDamageNew
 end
 
 -- brought this in to later remove critical options
@@ -391,18 +391,19 @@ end
 
 -- brought this is to handle Death's Door changes, TODO: apply new Death's Door Threshold options
 function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
-    Debug.console("manager_action_damage_adnd1e.lua", "applyDamage", "aDice", aDice)
+    Debug.console("manager_action_damage_adnd1e.lua", "applyDamageNew", "aDice", aDice)
     -- Get health fields
     local sTargetType, nodeTarget = ActorManager.getTypeAndNode(rTarget)
 
-    local nRemainder = 0
+    local nDmgBeyondTotalHp = 0
 
-    local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail, nCurrentHP
+    local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail, nCurrentHp
 
     if sTargetType == "pc" then
         nTotalHP = DB.getValue(nodeTarget, "hp.total", 0)
         nTempHP = DB.getValue(nodeTarget, "hp.temporary", 0)
         nWounds = DB.getValue(nodeTarget, "hp.wounds", 0)
+        nCurrentHp = (nTotalHP + nTempHP) - nWounds
         nDeathSaveSuccess = DB.getValue(nodeTarget, "hp.deathsavesuccess", 0)
         nDeathSaveFail = DB.getValue(nodeTarget, "hp.deathsavefail", 0)
     else
@@ -422,7 +423,22 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
     local _, sOriginalStatus = ActorHealthManager.getWoundPercent(rTarget)
 
     -- Decode damage/heal description
-    local rDamageOutput = decodeDamageText(nTotal, sDamage)
+    local rDamageOutput = ActionDamage.decodeDamageText(nTotal, sDamage)
+
+    -- changing death's door options, since it always exists in 1e
+    local nDeathDoorThreshold = 0
+    local nDEAD_AT = -10
+
+    local sOptHouseRuleDeathsDoor = OptionsManager.getOption("HouseRule_DeathsDoor")
+
+    if sOptHouseRuleDeathsDoor == "exactlyZero" then
+        nDeathDoorThreshold = 0
+    elseif sOptHouseRuleDeathsDoor == "zeroToMinusThree" then
+        nDeathDoorThreshold = 3
+    else
+        -- 9 because -10 = dead
+        nDeathDoorThreshold = 9
+    end
 
     -- Healing
     if rDamageOutput.sType == "recovery" then
@@ -668,24 +684,33 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
 
             -- Calculate wounds above HP
             if nWounds > nTotalHP then
-                nRemainder = nWounds - nTotalHP
+                nDmgBeyondTotalHp = nWounds - nTotalHP
                 nWounds = nTotalHP
             end
 
             -- Prepare for calcs
             local nodeTargetCT = ActorManager.getCTNode(rTarget)
 
-            -- Deal with remainder damage
-            if nRemainder >= (nTotalHP + 10) then
-                table.insert(aNotifications, "[INSTANT DEATH]")
-                nDeathSaveFail = 3
-            elseif nRemainder > 0 or nWounds == nTotalHP then
-                if nRemainder > 0 then
-                    table.insert(aNotifications, "[DAMAGE EXCEEDS HIT POINTS BY " .. nRemainder .. "]")
-                else
-                    table.insert(aNotifications, "[DAMAGE EXCEEDS HIT POINTS]")
+            -- deal with death's door threshold
+            -- currently has hp
+            if nCurrentHp > 0 then
+                -- todo: System Shock
+                -- Add check here for nAdjustedDamage > 50 and if so perform system shock check?-- celestian, AD&D
+                -- hit after having zero or less hp - dead
+                -- new hit causing damage beyond threshold = dead
+                if nAdjustedDamage > nCurrentHp + nDeathDoorThreshold then
+                    -- new hit causing 0 hp
+                    table.insert(aNotifications, "[INSTANT DEATH]")
+                    nDeathSaveFail = 3
+                elseif (nAdjustedDamage == nCurrentHp) then
+                    table.insert(aNotifications, "[DAMAGE EQUALS HIT POINTS - AT DEATH'S DOOR]")
+                elseif (nAdjustedDamage > nCurrentHp) and (nAdjustedDamage <= nCurrentHp + nDeathDoorThreshold) then
+                    table.insert(
+                        aNotifications,
+                        "[DAMAGE EXCEEDS HIT POINTS BY " .. nDmgBeyondTotalHp .. "  - AT DEATH'S DOOR]"
+                    )
                 end
-
+                -- todo: see if this stuff is used in the 2e ruleset
                 if nPrevWounds >= nTotalHP then
                     if rDamageOutput.bCritical then
                         nDeathSaveFail = nDeathSaveFail + 2
@@ -693,8 +718,34 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
                         nDeathSaveFail = nDeathSaveFail + 1
                     end
                 end
-            -- Add check here for nAdjustedDamage > 50 and if so perform system shock check?-- celestian, AD&D
+            else
+                table.insert(aNotifications, "[INSTANT DEATH]")
+                nDeathSaveFail = 3
             end
+
+            --end
+
+            -- Deal with remainder damage
+            -- if nDmgBeyondTotalHp >= (nTotalHP + 10) then
+            --     table.insert(aNotifications, "[INSTANT DEATH]")
+            --     nDeathSaveFail = 3
+            -- elseif nDmgBeyondTotalHp > 0 or nWounds == nTotalHP then
+            --     if nDmgBeyondTotalHp > 0 then
+            --         table.insert(aNotifications, "[DAMAGE EXCEEDS HIT POINTS BY " .. nDmgBeyondTotalHp .. "]")
+            --     else
+            --         table.insert(aNotifications, "[DAMAGE EXCEEDS HIT POINTS]")
+            --     end
+
+            --     if nPrevWounds >= nTotalHP then
+            --         if rDamageOutput.bCritical then
+            --             nDeathSaveFail = nDeathSaveFail + 2
+            --         else
+            --             nDeathSaveFail = nDeathSaveFail + 1
+            --         end
+            --     end
+            -- -- todo: System Shock
+            -- -- Add check here for nAdjustedDamage > 50 and if so perform system shock check?-- celestian, AD&D
+            -- end
 
             -- Handle stable situation
             EffectManager.removeEffect(nodeTargetCT, "Stable")
@@ -743,14 +794,15 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
             end
         end
 
+        -- deprecating, useless in 1e
         -- if optional rule from Fighter's Handbook using Armor Damage (DP) then...
-        if OptionsManager.getOption("OPTIONAL_ARMORDP") == "on" then
-            -- armor takes 1 damage each time "damaged"
-            -- local nodeCT = DB.findNode(ActorManager.getCTNodeName(rTarget));
-            local nodeCT = ActorManager.getCTNode(rTarget)
-            local nodeChar = CombatManagerADND.getNodeFromCT(nodeCT)
-            ActionDamage.damageArmorWorn(nodeChar, 1)
-        end
+        -- if OptionsManager.getOption("OPTIONAL_ARMORDP") == "on" then
+        --     -- armor takes 1 damage each time "damaged"
+        --     -- local nodeCT = DB.findNode(ActorManager.getCTNodeName(rTarget));
+        --     local nodeCT = ActorManager.getCTNode(rTarget)
+        --     local nodeChar = CombatManagerADND.getNodeFromCT(nodeCT)
+        --     ActionDamage.damageArmorWorn(nodeChar, 1)
+        -- end
 
         -- Update the damage output variable to reflect adjustments
         rDamageOutput.nVal = nAdjustedDamage
@@ -761,9 +813,17 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
     nDeathSaveSuccess = 0
     nDeathSaveFail = 0
 
+    -- effects management
     if sTargetType == "pc" then
+        Debug.console("manager_action_attack_adnd1e.lua 815", "pc")
         -- ^^ was PC
+        --local nDeathValue = (nTotalHP - nWounds) - nDmgBeyondTotalHp;
+
+        -- todo: fix this for deaths door and add coma effect
+        Debug.console("manager_action_attack_adnd1e.lua 819", nWounds, nTotalWounds, nTotalHP, nDeathDoorThreshold)
+        -- still has hp
         if nWounds < nTotalHP then
+            -- 0 or lower hp
             if EffectManager5E.hasEffect(rTarget, "Stable") then
                 EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable")
             end
@@ -776,20 +836,13 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
             if EffectManager5E.hasEffect(rTarget, "Dead") then
                 EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Dead")
             end
-        else
-            -- check for optional AD&D deaths door rule --celestian
-            local bDeathsDoor = OptionsManager.isOption("HouseRule_DeathsDoor", "on") -- using deaths door aD&D rule
-            local nDEAD_AT = -10 -- death at -10
+        elseif nWounds >= nTotalHP then
+            -- dead
+            local nHitPointValue = nTotalHP - nWounds
 
-            if not bDeathsDoor then
-                nDEAD_AT = 0
-            end
-
-            if
-                bDeathsDoor and not EffectManager5E.hasEffect(rTarget, "Unconscious") and
-                    ((nTotalHP - nWounds) - nRemainder > nDEAD_AT)
-             then
-                -- if below nDEAD_AT then mark DEAD and remove unconscious
+            -- equal to or higher than death's door threshold
+            if nHitPointValue >= nDeathDoorThreshold then
+                -- dead
                 EffectManager.addEffect(
                     "",
                     "",
@@ -797,19 +850,43 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
                     {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
                     true
                 )
-            elseif not EffectManager5E.hasEffect(rTarget, "Dead") and not ((nTotalHP - nWounds) - nRemainder > nDEAD_AT) then
-                -- removing an effect here causes an error because we're going through a loop of effects where DMGO is called and if this one
-                -- is removed it causes the for loop to crash
-                --EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious");
+            else
                 EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
             end
+        else
+            -- check for optional AD&D deaths door rule --celestian
+            --local bDeathsDoor = OptionsManager.isOption("HouseRule_DeathsDoor", "on") -- using deaths door aD&D rule
+            --local nDEAD_AT = -10 -- death at -10
+            --if not bDeathsDoor then
+            --    nDEAD_AT = 0
+            --end
+            -- if
+            --     bDeathsDoor and not EffectManager5E.hasEffect(rTarget, "Unconscious") and
+            --         ((nTotalHP - nWounds) - nDmgBeyondTotalHp > nDEAD_AT)
+            --  then
+            --     -- if below nDEAD_AT then mark DEAD and remove unconscious
+            --     EffectManager.addEffect(
+            --         "",
+            --         "",
+            --         ActorManager.getCTNode(rTarget),
+            --         {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
+            --         true
+            --     )
+            -- elseif not EffectManager5E.hasEffect(rTarget, "Dead") and not ((nTotalHP - nWounds) - nDmgBeyondTotalHp > nDEAD_AT) then
+            --     -- removing an effect here causes an error because we're going through a loop of effects where DMGO is called and if this one
+            --     -- is removed it causes the for loop to crash
+            --     --EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious");
+            --     EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
+            -- end
+            EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
         end
 
+        -- todo: what about this? should it be used?
         -- Set health fields
         DB.setValue(nodeTarget, "hp.deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
         DB.setValue(nodeTarget, "hp.deathsavefail", "number", math.min(nDeathSaveFail, 3))
         DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP)
-        DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds + nRemainder))
+        DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds + nDmgBeyondTotalHp))
     else
         -- was NPC...
         DB.setValue(nodeTarget, "deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
@@ -823,7 +900,7 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
     -- DB.setValue(nodeTarget, "hp.deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3));
     -- DB.setValue(nodeTarget, "hp.deathsavefail", "number", math.min(nDeathSaveFail, 3));
     -- DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP);
-    -- DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds+nRemainder));
+    -- DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds+nDmgBeyondTotalHp));
     -- else
     -- DB.setValue(nodeTarget, "deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3));
     -- DB.setValue(nodeTarget, "deathsavefail", "number", math.min(nDeathSaveFail, 3));

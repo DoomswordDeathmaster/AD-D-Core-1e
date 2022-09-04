@@ -3,7 +3,8 @@
 <root version="3.0" >
 
 <properties>
-    <name>2E - 1E Properties</name>
+    <!-- <name>2E - 1E Properties</name> -->
+    <name>AD&amp;D 1E/OSRIC</name>
     <version>1.4</version>
     <loadorder>99</loadorder>
     <description>
@@ -35,7 +36,6 @@
     <script name="DataCommonADND1e" file="scripts/data_common_adnd1e.lua" />
     <script name="Options5E" file="scripts/data_options_5e.lua" />
     <script name="OptionsADND" file="scripts/data_options_adnd.lua" />
-    <script name="OptionsADND1e" file="scripts/data_options_adnd1e.lua" />
     <script name="ActionInitManagerADND1e" file="scripts/manager_action_init_adnd1e.lua" />
     <script name="ActionSurpriseManagerADND1e" file="scripts/manager_action_surprise_adnd1e.lua" />
     <script name="OptionsADND1e" file="scripts/data_options_adnd1e.lua" />

@@ -1,7 +1,7 @@
 Group all initiative
 grouped init swap
 assign init based on character who rolled
-deprecating critical hits
+remove critical hits
 d6 initiative die
 remove pc vs npc init
 encumbrance mandatory
@@ -12,26 +12,40 @@ enable delay only for OSRIC
 remove ability checks
 remove kits
 make currency weight mandatory
-remove auto-init options
+?remove auto-init options
 remove critical hit/fumble tables
+rename to AD&D 1e/OSRIC
 
 
 need to deal with monsters that are automatically set to 99 initiative
 need to deal with 10 segment rounds
 need to deal with death's door
 need to bring useful changes into options and house rules mod
-need to compare 2e changes from new ruleset version
 
 
 
-look at defaults for all options I'm deprecating, to make sure the default is what's right for 1e
 
-tests
-dm roll init
-player roll init
-init swap
-character init delay
-allow ability checks
+Forced defaults
+	Group all initiative
+	Always allow initiative ties
+	d6 initiative die
+	assign init based on character who rolled
+	remove pc vs npc initiative
+	remove armor dp
+	remove all initiative mods
+	auto-reset initiative every round
+	remove kits
+	death's door always on
+
+
+
+
+{ labels = "option_val_zero|option_val_minus_three", values = "exactlyZero|zeroToMinusThree", baselabel = "option_val_zero_or_less", baseval = "zeroOrLess", default = "zeroOrLess" });
+	
+	
+
+
+
 
 
 
