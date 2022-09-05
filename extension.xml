@@ -43,7 +43,7 @@
     <script name="FightsSavesAsManager" file="scripts/manager_fights_saves_as.lua" />
     <script name="NpcClickChooser" file="campaign/scripts/npc_click_chooser.lua" />
     <script name="CharEncumbranceManager" file="scripts/manager_char_encumbrance.lua" />
-    <script name="ActorManagerADND1e" file="scripts/manager_actor_adnd1e.lua" />
+    <script name="ActorHealthManagerADND1e" file="scripts/manager_actor_health_adnd1e.lua" />
     <script name="ActionDamageADND1e" file="scripts/manager_action_damage_adnd1e.lua" />
 
     <!-- <includefile source="strings/strings_adnd.xml" /> -->

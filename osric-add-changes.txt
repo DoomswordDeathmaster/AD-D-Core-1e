@@ -17,9 +17,9 @@ remove critical hit/fumble tables
 rename to AD&D 1e/OSRIC
 
 
-need to deal with monsters that are automatically set to 99 initiative
+Xneed to deal with monsters that are automatically set to 99 initiative
 need to deal with 10 segment rounds
-need to deal with death's door
+X need to deal with death's door
 need to bring useful changes into options and house rules mod
 
 
@@ -36,6 +36,14 @@ Forced defaults
 	auto-reset initiative every round
 	remove kits
 	death's door always on
+
+
+characters brought back to life receive a helpless effect
+unconcious characters brought back to 1 or more hp receive a helpless effect
+
+check if 2e base ruleset removes effects when wounds manually changed
+
+
 
 
 

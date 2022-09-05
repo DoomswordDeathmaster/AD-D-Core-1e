@@ -241,11 +241,22 @@ function applyInitResultToAllNPCs(nInitResult)
     -- group init - apply init result to remaining NPCs
     for _, v in pairs(CombatManager.getCombatantNodes()) do
         if DB.getValue(v, "friendfoe") ~= "friend" then
-            -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
-            DB.setValue(v, "initresult", "number", nInitResult)
-            DB.setValue(v, "initresult_d6", "number", nInitResult)
+            -- basically just zombies so that they go last
+            local nInit = DB.getValue(v, "init", 0)
+
+            if nInit == 99 then
+                -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
+                DB.setValue(v, "initresult", "number", 99)
+                DB.setValue(v, "initresult_d6", "number", 99)
+            else
+                -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
+                DB.setValue(v, "initresult", "number", nInitResult)
+                DB.setValue(v, "initresult_d6", "number", nInitResult)
+            end
+
             -- set init rolled
             DB.setValue(v, "initrolled", "number", 1)
+            Debug.console("combat 254", v)
         end
     end
 end

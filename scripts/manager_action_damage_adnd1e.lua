@@ -395,14 +395,16 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
     -- Get health fields
     local sTargetType, nodeTarget = ActorManager.getTypeAndNode(rTarget)
 
+    local nAdjustedDamage = 0
     local nDmgBeyondTotalHp = 0
 
-    local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail, nCurrentHp
+    local nTotalHP, nTempHP, nWounds, nPrevWounds, nDeathSaveSuccess, nDeathSaveFail, nCurrentHp
 
     if sTargetType == "pc" then
         nTotalHP = DB.getValue(nodeTarget, "hp.total", 0)
         nTempHP = DB.getValue(nodeTarget, "hp.temporary", 0)
         nWounds = DB.getValue(nodeTarget, "hp.wounds", 0)
+        nPrevWounds = nWounds
         nCurrentHp = (nTotalHP + nTempHP) - nWounds
         nDeathSaveSuccess = DB.getValue(nodeTarget, "hp.deathsavesuccess", 0)
         nDeathSaveFail = DB.getValue(nodeTarget, "hp.deathsavefail", 0)
@@ -495,12 +497,13 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
             -- Calculate heal amounts
             local nHealAmount = rDamageOutput.nVal
 
+            -- remove this, not this way in 1e/osric
             -- If healing from zero (or negative), then remove Stable effect and reset wounds to match HP
-            if (nHealAmount > 0) and (nWounds >= nTotalHP) then
-                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable")
-                nWounds = nTotalHP
-                nHealAmount = 1 -- heals only restore 1 hp when below 0.
-            end
+            -- if (nHealAmount > 0) and (nWounds >= nTotalHP) then
+            --     EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable")
+            --     nWounds = nTotalHP
+            --     nHealAmount = 1 -- heals only restore 1 hp when below 0.
+            -- end
 
             local nWoundHealAmount = math.min(nHealAmount, nWounds)
             nWounds = nWounds - nWoundHealAmount
@@ -620,7 +623,7 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
         -- Apply damage type adjustments
         local nDamageAdjust, bVulnerable, bResist, bAbsorb, nDamageDice =
             ActionDamage.getDamageAdjust(rSource, rTarget, nTotal, rDamageOutput, aDice)
-        local nAdjustedDamage = nTotal + nDamageAdjust
+        nAdjustedDamage = nTotal + nDamageAdjust
 
         if nAdjustedDamage < 0 then
             nAdjustedDamage = 0
@@ -676,8 +679,8 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
 
         -- Apply remaining damage
         if nAdjustedDamage > 0 then
-            -- Remember previous wounds
-            local nPrevWounds = nWounds
+            -- done earlier
+            --nPrevWounds = nWounds
 
             -- Apply wounds
             nWounds = math.max(nWounds + nAdjustedDamage, 0)
@@ -699,10 +702,10 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
                 -- hit after having zero or less hp - dead
                 -- new hit causing damage beyond threshold = dead
                 if nAdjustedDamage > nCurrentHp + nDeathDoorThreshold then
-                    -- new hit causing 0 hp
                     table.insert(aNotifications, "[INSTANT DEATH]")
                     nDeathSaveFail = 3
                 elseif (nAdjustedDamage == nCurrentHp) then
+                    -- new hit causing hit points to fall within threshold
                     table.insert(aNotifications, "[DAMAGE EQUALS HIT POINTS - AT DEATH'S DOOR]")
                 elseif (nAdjustedDamage > nCurrentHp) and (nAdjustedDamage <= nCurrentHp + nDeathDoorThreshold) then
                     table.insert(
@@ -719,8 +722,14 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
                     end
                 end
             else
-                table.insert(aNotifications, "[INSTANT DEATH]")
-                nDeathSaveFail = 3
+                -- ongoing damage
+                if rSource == nil then
+                    table.insert(aNotifications, "[BLEEDING]")
+                else
+                    -- hit after at 0 hp or less - death
+                    table.insert(aNotifications, "[INSTANT DEATH]")
+                    nDeathSaveFail = 3
+                end
             end
 
             --end
@@ -813,87 +822,21 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
     nDeathSaveSuccess = 0
     nDeathSaveFail = 0
 
-    -- effects management
     if sTargetType == "pc" then
-        Debug.console("manager_action_attack_adnd1e.lua 815", "pc")
-        -- ^^ was PC
-        --local nDeathValue = (nTotalHP - nWounds) - nDmgBeyondTotalHp;
-
-        -- todo: fix this for deaths door and add coma effect
-        Debug.console("manager_action_attack_adnd1e.lua 819", nWounds, nTotalWounds, nTotalHP, nDeathDoorThreshold)
-        -- still has hp
-        if nWounds < nTotalHP then
-            -- 0 or lower hp
-            if EffectManager5E.hasEffect(rTarget, "Stable") then
-                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable")
-            end
-
-            -- check for optional AD&D deaths door rule (0 to -10) ? --celestian
-            if EffectManager5E.hasEffect(rTarget, "Unconscious") then
-                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
-            end
-
-            if EffectManager5E.hasEffect(rTarget, "Dead") then
-                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Dead")
-            end
-        elseif nWounds >= nTotalHP then
-            -- dead
-            local nHitPointValue = nTotalHP - nWounds
-
-            -- equal to or higher than death's door threshold
-            if nHitPointValue >= nDeathDoorThreshold then
-                -- dead
-                EffectManager.addEffect(
-                    "",
-                    "",
-                    ActorManager.getCTNode(rTarget),
-                    {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
-                    true
-                )
-            else
-                EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
-            end
-        else
-            -- check for optional AD&D deaths door rule --celestian
-            --local bDeathsDoor = OptionsManager.isOption("HouseRule_DeathsDoor", "on") -- using deaths door aD&D rule
-            --local nDEAD_AT = -10 -- death at -10
-            --if not bDeathsDoor then
-            --    nDEAD_AT = 0
-            --end
-            -- if
-            --     bDeathsDoor and not EffectManager5E.hasEffect(rTarget, "Unconscious") and
-            --         ((nTotalHP - nWounds) - nDmgBeyondTotalHp > nDEAD_AT)
-            --  then
-            --     -- if below nDEAD_AT then mark DEAD and remove unconscious
-            --     EffectManager.addEffect(
-            --         "",
-            --         "",
-            --         ActorManager.getCTNode(rTarget),
-            --         {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
-            --         true
-            --     )
-            -- elseif not EffectManager5E.hasEffect(rTarget, "Dead") and not ((nTotalHP - nWounds) - nDmgBeyondTotalHp > nDEAD_AT) then
-            --     -- removing an effect here causes an error because we're going through a loop of effects where DMGO is called and if this one
-            --     -- is removed it causes the for loop to crash
-            --     --EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious");
-            --     EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
-            -- end
-            EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
-        end
-
-        -- todo: what about this? should it be used?
-        -- Set health fields
-        DB.setValue(nodeTarget, "hp.deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
-        DB.setValue(nodeTarget, "hp.deathsavefail", "number", math.min(nDeathSaveFail, 3))
-        DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP)
-        DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds + nDmgBeyondTotalHp))
-    else
-        -- was NPC...
-        DB.setValue(nodeTarget, "deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
-        DB.setValue(nodeTarget, "deathsavefail", "number", math.min(nDeathSaveFail, 3))
-        DB.setValue(nodeTarget, "hptemp", "number", nTempHP)
-        DB.setValue(nodeTarget, "wounds", "number", nWounds)
+        updatePcCondition(
+            rDamageOutput.sType,
+            rSource,
+            nWounds,
+            nPrevWounds,
+            nTotalHP,
+            nDeathDoorThreshold,
+            rTarget,
+            nCurrentHp,
+            nAdjustedDamage
+        )
     end
+
+    updateHealthStatus(sTargetType, nodeTarget, nDeathSaveSuccess, nDeathSaveFail, nTempHP, nWounds, nDmgBeyondTotalHp)
 
     --
     -- if sTargetType == "pc" then
@@ -962,5 +905,236 @@ function applyDamageNew(rSource, rTarget, bSecret, sDamage, nTotal, aDice)
             --ActionsManager.messageResult(bSecret, nil, rTarget, sLmsg, sSmsg);
             ActionsManager.outputResult(bSecret, nil, rTarget, sLmsg, sSmsg)
         end
+    end
+end
+
+function updatePcCondition(
+    sDamageType,
+    rSource,
+    nWounds,
+    nPrevWounds,
+    nTotalHP,
+    nDeathDoorThreshold,
+    rTarget,
+    nCurrentHp,
+    nAdjustedDamage)
+    -- effects management
+    --if sTargetType == "pc" then
+    Debug.console("manager_action_attack_adnd1e.lua 897", "pc")
+    -- ^^ was PC
+    --local nDeathValue = (nTotalHP - nWounds) - nDmgBeyondTotalHp;
+
+    -- todo: done? fix this for deaths door and add coma effect
+    Debug.console(
+        "manager_action_attack_adnd1e.lua 902",
+        sDamageType,
+        rSource,
+        nWounds,
+        nPrevWounds,
+        nTotalHP,
+        nDeathDoorThreshold,
+        rTarget,
+        nCurrentHp,
+        nAdjustedDamage
+    )
+
+    -- non-damage
+    if sDamageType == "recovery" or sDamageType == "heal" or sDamageType == "temphp" then
+        -- damage from another creature
+        -- healed to 0 or less hp from negative
+        if nWounds > nTotalHP and nPrevWounds >= nTotalHP then
+            -- healed to 1 hp or greater from zero or negative
+            if EffectManager5E.hasEffect(rTarget, "Unconscious") then
+                -- remove and re-add unconscious to remove damage advanced effect
+                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Unconscious", sLabel = "Unconscious", nDuration = 0},
+                    true
+                )
+            end
+
+            -- add stable if not already present
+            if not EffectManager5E.hasEffect(rTarget, "Stable") then
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Stable", sLabel = "Stable", nDuration = 0},
+                    true
+                )
+            end
+        elseif nWounds < nTotalHP and nPrevWounds >= nTotalHP then
+            -- dying pc was stabilized, then returned to positive hp
+            if EffectManager5E.hasEffect(rTarget, "Stable") then
+                -- remove stable
+                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Stable")
+                -- add coma if not already present
+                if not EffectManager5E.hasEffect(rTarget, "Coma") then
+                    EffectManager.addEffect(
+                        "",
+                        "",
+                        ActorManager.getCTNode(rTarget),
+                        {sName = "Coma", sLabel = "Coma", nDuration = 0},
+                        true
+                    )
+                end
+            end
+
+            -- unconcious pc returned to positive hp
+            if EffectManager5E.hasEffect(rTarget, "Unconscious") then
+                -- remove and re-add unconscious to remove damage advanced effect
+                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Unconscious", sLabel = "Unconscious", nDuration = 0},
+                    true
+                )
+                -- add coma if not already present
+                if not EffectManager5E.hasEffect(rTarget, "Coma") then
+                    EffectManager.addEffect(
+                        "",
+                        "",
+                        ActorManager.getCTNode(rTarget),
+                        {sName = "Coma", sLabel = "Coma", nDuration = 0},
+                        true
+                    )
+                end
+            end
+
+            -- dead, then raised or resurrected
+            if EffectManager5E.hasEffect(rTarget, "Dead") then
+                EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Dead")
+                if EffectManager5E.hasEffect(rTarget, "Unconscious") then
+                    -- remove unconscious
+                    EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
+                end
+                -- add helpless
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Helpless", sLabel = "Helpless", nDuration = 0},
+                    true
+                )
+            end
+        end
+    elseif rSource ~= nil then
+        -- ongoing damage
+        -- deal with death's door threshold
+        -- currently has hp
+        if nCurrentHp > 0 then
+            -- todo: see if this stuff is used in the 2e ruleset
+            -- if nPrevWounds >= nTotalHP then
+            --     if rDamageOutput.bCritical then
+            --         nDeathSaveFail = nDeathSaveFail + 2
+            --     else
+            --         nDeathSaveFail = nDeathSaveFail + 1
+            --     end
+            -- end
+            -- todo: System Shock
+            -- Add check here for nAdjustedDamage > 50 and if so perform system shock check?-- celestian, AD&D
+            -- hit after having zero or less hp - dead
+            -- new hit causing damage beyond threshold = dead
+            if nAdjustedDamage > nCurrentHp + nDeathDoorThreshold then
+                -- new hit causing hit points to drop to 0
+                if not EffectManager5E.hasEffect(rTarget, "Dead") then
+                    EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious");
+                    EffectManager.addEffect(
+                        "",
+                        "",
+                        ActorManager.getCTNode(rTarget),
+                        {sName = "Dead", nDuration = 0},
+                        true
+                    )
+                end
+            elseif (nAdjustedDamage == nCurrentHp) then
+                -- new hit causing hit points to fall within threshold
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
+                    true
+                )
+            elseif (nAdjustedDamage > nCurrentHp) and (nAdjustedDamage <= nCurrentHp + nDeathDoorThreshold) then
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Unconscious;DMGO:1", sLabel = "Unconscious;DMGO:1", nDuration = 0},
+                    true
+                )
+            end
+        else
+            -- hit after at 0 hp or less - death
+            EffectManager.addEffect("", "", ActorManager.getCTNode(rTarget), {sName = "Dead", nDuration = 0}, true)
+            nDeathSaveFail = 3
+        end
+    else
+        Debug.console("ongoing 1076")
+        if nCurrentHp <= -9 then
+            -- removing an effect here causes an error because we're going through a loop of effects where DMGO is called and if this one
+            -- is removed it causes the for loop to crash
+            -- if EffectManager5E.hasEffect(rTarget, "Unconscious") then
+            --     -- remove unconscious
+            --     EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
+            -- end
+            if not EffectManager5E.hasEffect(rTarget, "Dead") then
+                EffectManager.addEffect(
+                    "",
+                    "",
+                    ActorManager.getCTNode(rTarget),
+                    {sName = "Dead", sLabel = "Dead", nDuration = 0},
+                    true
+                )
+                nDeathSaveFail = 3
+            end
+        end
+    end
+    Debug.console("1099")
+    -- doing this here, outside of the loop that causes an error, line 1083
+    if EffectManager5E.hasEffect(rTarget, "Unconscious") and EffectManager5E.hasEffect(rTarget, "Dead") then
+        -- remove unconscious
+        EffectManager.removeEffect(ActorManager.getCTNode(rTarget), "Unconscious")
+    end
+end
+
+function updateHealthStatus(
+    sTargetType,
+    nodeTarget,
+    nDeathSaveSuccess,
+    nDeathSaveFail,
+    nTempHP,
+    nWounds,
+    nDmgBeyondTotalHp)
+    Debug.console(
+        "manager_action_attack_adnd1e.lua 1116",
+        sTargetType,
+        nodeTarget,
+        nDeathSaveSuccess,
+        nDeathSaveFail,
+        nTempHP,
+        nWounds,
+        nDmgBeyondTotalHp
+    )
+
+    if sTargetType == "pc" then
+        -- todo: what about this? should it be used?
+        -- Set health fields
+        DB.setValue(nodeTarget, "hp.deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
+        DB.setValue(nodeTarget, "hp.deathsavefail", "number", math.min(nDeathSaveFail, 3))
+        DB.setValue(nodeTarget, "hp.temporary", "number", nTempHP)
+        DB.setValue(nodeTarget, "hp.wounds", "number", (nWounds + nDmgBeyondTotalHp))
+    else
+        -- was NPC...
+        DB.setValue(nodeTarget, "deathsavesuccess", "number", math.min(nDeathSaveSuccess, 3))
+        DB.setValue(nodeTarget, "deathsavefail", "number", math.min(nDeathSaveFail, 3))
+        DB.setValue(nodeTarget, "hptemp", "number", nTempHP)
+        DB.setValue(nodeTarget, "wounds", "number", nWounds)
     end
 end

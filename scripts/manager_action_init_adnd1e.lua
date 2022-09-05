@@ -22,12 +22,32 @@ end
 -- initiative without modifiers, from item entry in ct or init button on character
 function getRollNew(rActor, bSecretRoll, rItem)
     local rRoll = {}
-    Debug.console("getRollNoMods")
+    Debug.console("getRollNew")
     rRoll.sType = "init"
     rRoll.aDice = {"d" .. DataCommonADND.nDefaultInitiativeDice}
 
-    -- TODO: Decide how to get init mod from rActor for at least zombies in OSRIC
     rRoll.nMod = 0
+
+    -- -- TODO, not necessary: Decide how to get init mod from rActor for at least zombies in OSRIC
+    -- local sActorType, nodeActor = ActorManager.getTypeAndNode(rActor)
+    -- Debug.console(nodeActor, sActorType)
+    -- --Debug.console("manager_action_init.lua","getRoll","sActorType",sActorType);
+    -- -- if nodeActor then
+    -- --     if sActorType == "ct" then
+    -- --         -- NPCs
+    -- --         local nMod = DB.getValue(nodeActor, "initiative.total", 0)
+    -- --         Debug.console(nMod)
+    -- --         if nMod == 0 then
+    -- --             nMod = DB.getValue(nodeActor, "init", 0)
+    -- --             Debug.console(nMod)
+    -- --         end
+
+    -- --         Debug.console(nMod)
+    -- --         rRoll.nMod = nMod
+    -- --     end
+    -- -- end
+    -- --end of npc modding
+
     rRoll.sDesc = "[INIT]"
     rRoll.bSecret = bSecretRoll
 
