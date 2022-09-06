@@ -4,11 +4,11 @@
 
 <properties>
     <!-- <name>2E - 1E Properties</name> -->
-    <name>AD&amp;D 1E/OSRIC</name>
+    <name>AD&amp;D 1E/OSRIC Rules</name>
     <version>1.4</version>
     <loadorder>99</loadorder>
     <description>
-        <text>1E Saves, Matrix and Ability properties.</text>
+        <text>AD&amp;D 1E/OSRIC Rules</text>
         <website></website>
         <author>Celestian</author>
     </description>
@@ -17,7 +17,7 @@
     </ruleset>
 </properties>
 
-<announcement text="AD&amp;D 1E Properties v1.4, AD&amp;D 2E version.\r--by Celestian 2017-2021\renhanced by Doomsword 2022" font="emotefont" icon="rulesetlogo_DungeonClassic" />
+<announcement text="AD&amp;D 1E/OSRIC Rules v1.4, AD&amp;D 2E version.\r--by Celestian 2017-2021\renhanced by Doomsword 2022" font="emotefont" icon="rulesetlogo_DungeonClassic" />
 
 <base>
     <includefile source="campaign/record_char_combat.xml" />

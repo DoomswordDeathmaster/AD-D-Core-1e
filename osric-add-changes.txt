@@ -1,24 +1,25 @@
-Group all initiative
-grouped init swap
-assign init based on character who rolled
-remove critical hits
-d6 initiative die
-remove pc vs npc init
-encumbrance mandatory
-remove armor dp
-remove all initiative mods
-auto-reset initiative every round
-enable delay only for OSRIC
-remove ability checks
-remove kits
-make currency weight mandatory
-?remove auto-init options
-remove critical hit/fumble tables
-rename to AD&D 1e/OSRIC
+Group all initiative (forced)
+grouped init swap (option)
+assign init based on character who rolled (forced)
+remove critical hits (forcing/removing)
+d6 initiative die (forced)
+remove pc vs npc init (forced)
+encumbrance mandatory (forcing/removing)
+remove armor dp (forced)
+remove all initiative mods (forced)
+auto-reset initiative every round (forced)
+enable delay only for OSRIC (option)
+remove ability checks (forcing/removing) SEE BOTTOM
+remove kits (forced))
+make currency weight mandatory (forcing/removing)
+change label of auto npc initiative and switch to on/off only (forced)
+remove critical hit/fumble tables (forcing/removing)
+rename to AD&D 1e/OSRIC (forced)
 
 
 Xneed to deal with monsters that are automatically set to 99 initiative
 need to deal with 10 segment rounds
+deal with autonpcinitiative
 X need to deal with death's door
 need to bring useful changes into options and house rules mod
 
@@ -37,18 +38,17 @@ Forced defaults
 	remove kits
 	death's door always on
 
-
-characters brought back to life receive a helpless effect
-unconcious characters brought back to 1 or more hp receive a helpless effect
+Death's Door
+	characters brought back to life receive a helpless effect
+	unconcious characters brought back to 1 or more hp receive a helpless effect
 
 check if 2e base ruleset removes effects when wounds manually changed
 
+add an ability check option of 3d6 to AD&D Options and House Rules
 
 
 
-
-
-{ labels = "option_val_zero|option_val_minus_three", values = "exactlyZero|zeroToMinusThree", baselabel = "option_val_zero_or_less", baseval = "zeroOrLess", default = "zeroOrLess" });
+IDEA: maybe we create an entirely new extension and pop a window on Core 1e that tells people that it's no longer being developed
 	
 	
 
