@@ -1,5 +1,4 @@
 function onInit()
-	-- TODO: test super.oninit here
 	local nodeChar = getDatabaseNode()
 	DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", updateAscendingValues)
 
@@ -15,13 +14,9 @@ function onInit()
 
 	DB.addHandler(DB.getPath(nodeChar, "hp.base"), "onUpdate", updateHealthScore)
 	DB.addHandler(DB.getPath(nodeChar, "hp.basemod"), "onUpdate", updateHealthScore)
-	--this is managed, not adjusted by players
-	--DB.addHandler(DB.getPath(nodeChar, "hp.hpconmod"),  "onUpdate", updateHealthScore);
 
 	DB.addHandler(DB.getPath(nodeChar, "hp.adjustment"), "onUpdate", updateHealthScore)
 	DB.addHandler(DB.getPath(nodeChar, "hp.tempmod"), "onUpdate", updateHealthScore)
-
-	-- DB.addHandler(DB.getPath(nodeChar, "inventorylist"),  "onChildDeleted", updateEncumbranceForDelete);
 
 	DB.addHandler(DB.getPath(nodeChar, "surprise.base"), "onUpdate", updateSurpriseScores)
 	DB.addHandler(DB.getPath(nodeChar, "surprise.tempmod"), "onUpdate", updateSurpriseScores)
@@ -31,9 +26,6 @@ function onInit()
 	DB.addHandler(DB.getPath(nodeChar, "initiative.misc"), "onUpdate", updateInitiativeScores)
 
 	DB.addHandler(DB.getPath(nodeChar, "abilities.strength.score"), "onUpdate", onEncumbranceChanged)
-
-	--// TODO is this necessary?
-	--DB.addHandler("combattracker.list", "onChildDeleted", updatesBulk);
 
 	updateAbilityScores(nodeChar)
 	updateAscendingValues()
@@ -46,31 +38,21 @@ end
 --- Update surprise scores
 ---
 function updateSurpriseScores()
-	--local sOptSurpriseDie = OptionsManager.getOption("surpriseDie");
-
 	local nodeChar = getDatabaseNode()
+	--local surpriseBase = 2
 
-	-- with default d10 surprise die
-	-- local surpriseBase = 3;
+	-- surprise.base if set, 2 if not set
+	local nSurpriseBase = DB.getValue(nodeChar,"surprise.base",2);
 
-	-- -- d6
-	-- if sOptSurpriseDie == "d6" then
-	--     surpriseBase = 2;
-	-- -- d12
-	-- elseif sOptSurpriseDie == "d12" then
-	--     surpriseBase = 4;
-	-- end
+	-- no mods in 1e/OSRIC
+	local nMod = 0
 
-	--local surpriseDie = "d6";
-	local surpriseBase = 2
-
-	local nMod = 0 --DB.getValue(nodeChar,"surprise.mod",0);
-	-- where does tmpmod come from -- check 2e
+	-- take this if it exists, I guess, but not aware of a place where it does
 	local nTmpMod = DB.getValue(nodeChar, "surprise.tempmod", 0)
-	local nTotal = surpriseBase + nMod + nTmpMod
+	local nTotal = nSurpriseBase + nMod + nTmpMod
 
 	DB.setValue(nodeChar, "surprise.total", "number", nTotal)
-	DB.setValue(nodeChar, "surprise.base", "number", surpriseBase)
+	DB.setValue(nodeChar, "surprise.base", "number", nSurpriseBase)
 end
 
 ---

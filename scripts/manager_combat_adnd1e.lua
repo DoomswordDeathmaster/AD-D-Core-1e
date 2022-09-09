@@ -8,50 +8,32 @@ NPC_LASTINIT = 0
 OOB_MSGTYPE_CHANGEINIT = "changeinitiative"
 
 function onInit()
-    -- local initiativeDie = OptionsManager.getOption("initiativeDie");
-    -- local initiativeDieNumber = initiativeDie:gsub("d", "");
-
-    -- local initiativeDieNumber = 6;
-    -- DataCommonADND.nDefaultInitiativeDice = initiativeDieNumber;
-
     rollEntryInitOrig = CombatManagerADND.rollEntryInit
     CombatManagerADND.rollEntryInit = rollEntryInitNew
     CombatManager2.rollEntryInit = rollEntryInitNew
 
-    rollRandomInitOrig = CombatManagerADND.rollRandomInit
     CombatManagerADND.rollRandomInit = rollRandomInitNew
     CombatManager2.rollRandomInit = rollRandomInitNew
 
     getACHitFromMatrixForNPCOrig = CombatManagerADND.getACHitFromMatrixForNPC
     CombatManagerADND.getACHitFromMatrixForNPC = getACHitFromMatrixForNPCNew
 
-    CombatManagerADND.handleInitiativeChange = handleInitiativeChange
-    OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_CHANGEINIT, handleInitiativeChange)
+    CombatManagerADND.handleInitiativeChange = handleInitiativeChangeNew
+    OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_CHANGEINIT, handleInitiativeChangeNew)
 
     --
     CombatManager.setCustomCombatReset(resetInitNew)
     CombatManager.setCustomRoundStart(onRoundStartNew)
-    CombatManager.setCustomSort(sortfuncADnDNew)
 end
 
--- TODO: think about how OSRIC zombies affect this
-function rollRandomInitNew(nMod, bADV)
-    --if OptionsManager.getOption("initiativeModifiersAllow") == "off" then
-    -- no modifiers
-    -- TODO: decide i nMod is good, given that zomies have a 99
-    nMod = 0
-    --end
-    Debug.console("rollRandomInitNew")
-    rollRandomInitOrig(nMod, bADV)
+function rollRandomInitNew(nMod)
+    local nInitResult = math.random(DataCommonADND.nDefaultInitiativeDice)
+    Debug.console("rollrandominitnew 39", nInitResult)
+    return nInitResult
 end
 
--- TODO: this needs to be examined in full, due to any option changes
 function rollEntryInitNew(nodeEntry)
-    --local bOptInitMods = (OptionsManager.getOption("initiativeModifiersAllow") == 'on');
-    --local bOptInitTies = (OptionsManager.getOption("initiativeTiesAllow") == 'on');
-    --local sOptInitGrouping = OptionsManager.getOption("initiativeGrouping");
-    local bOptInitGroupingSwap = (OptionsManager.getOption("useOsricInitiativeSwap") == "on")
-    local bOptAutoNpcInitiative = (OptionsManager.getOption("autoNpcInitiative") == "on")
+    local bOsricInitiativeSwap = (OptionsManager.getOption("useOsricInitiativeSwap") == "on")
 
     Debug.console("nodeEntry", nodeEntry)
 
@@ -60,22 +42,6 @@ function rollEntryInitNew(nodeEntry)
     end
 
     Debug.console("rollEntryInitNew")
-    --local bOptPCVNPCINIT = (OptionsManager.getOption("PCVNPCINIT") == 'on');
-    -- default init mods to 0
-    local nInitMOD = 0
-
-    -- mods on
-    -- if bOptInitMods then
-    --     -- Start with the base initiative bonus
-    --     local nInit = DB.getValue(nodeEntry, "init", 0);
-    --     -- Get any effect modifiers
-    --     local rActor = ActorManager.resolveActor(nodeEntry);
-    --     local aEffectDice, nEffectBonus = EffectManager5E.getEffectsBonus(rActor, "INIT");
-    --     nInitMOD = StringManager.evalDice(aEffectDice, nEffectBonus);
-    -- end
-
-    -- Check for the ADVINIT effect
-    local bADV = EffectManager5E.hasEffectCondition(rActor, "ADVINIT")
 
     -- PC/NPC init
     local sClass, sRecord = DB.getValue(nodeEntry, "link", "", "")
@@ -97,124 +63,32 @@ function rollEntryInitNew(nodeEntry)
         -- if grouping involving pcs is on
         -- if bOptPCVNPCINIT then --or (sOptInitGrouping == "pc" or sOptInitGrouping == "both") then
         -- roll without mods
-        nInitResult = rollRandomInitOrig(0, bADV)
+        nInitResult = rollRandomInitNew(0)
         -- group init - apply init result to remaining PCs
         applyInitResultToAllPCs(nInitResult)
         -- set last init for comparison for ties and swapping
         PC_LASTINIT = nInitResult
-        -- else
-        -- individual init
-        nInitResult = rollRandomInitOrig(nInitPC + nInitMOD, bADV)
-        --end
 
         -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
         DB.setValue(nodeEntry, "initresult", "number", nInitResult)
         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult)
     else
-        -- if bOptInitMods then
-        --     -- flip through weaponlist, get the largest speedfactor as default
-        --     local nSpeedFactor = 0;
-        --     for _,nodeWeapon in pairs(DB.getChildren(nodeEntry, "weaponlist")) do
-        --         local nSpeed = DB.getValue(nodeWeapon,"speedfactor",0);
-        --         if nSpeed > nSpeedFactor then
-        --             nSpeedFactor = nSpeed;
-        --         end
-        --     end
-        --     if nSpeedFactor ~= 0 then
-        --         nInit = nSpeedFactor + nInitMOD ;
-        --     elseif (nTotal ~= 0) then
-        --         nInit = nTotal + nInitMOD ;
-        --     end
-        -- end
-        --[[ IF we ignore size/mods, clear nInit ]]
-        -- if OptionsManager.getOption("OPTIONAL_INIT_SIZEMODS") ~= "on" then
-        --     nInit = 0;
-        -- end
-        -- TODO - TEST TO MAKE SURE ALL INIT STILL WORKS
-        -- if bOptAutoNpcInitiative then
-        --     -- if they have custom init then we use it.
-        --     local nInitResult = rollRandomInitOrig(nInit, bADV);
-        --     DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-        --     DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-        -- else
-        --     -- For NPCs with group option enabled
-        --     -- Get the entry's database node name and creature name
-        --     local sStripName = CombatManager.stripCreatureNumber(DB.getValue(nodeEntry, "name", ""));
-        --     if sStripName == "" then
-        --         local nInitResult = rollRandomInitOrig(nInit, bADV);
-        --         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-        --         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-        --         return;
-        --     end
-        --     -- Iterate through list looking for other creature's with same name and faction
-        --     local nLastInit = nil;
-        --     local sEntryFaction = DB.getValue(nodeEntry, "friendfoe", "");
-        --     for _,v in pairs(CombatManager.getCombatantNodes()) do
-        --         if v.getName() ~= nodeEntry.getName() then
-        --             if DB.getValue(v, "friendfoe", "") == sEntryFaction then
-        --                 local sTemp = CombatManager.stripCreatureNumber(DB.getValue(v, "name", ""));
-        --                 if sTemp == sStripName then
-        --                     local nChildInit = DB.getValue(v, "initresult", 0);
-        --                     if nChildInit ~= -10000 then
-        --                         nLastInit = nChildInit;
-        --                     end
-        --                 end
-        --             end
-        --         end
-        --     end
-        --     -- If we found similar creatures, then match the initiative of the last one found
-        --     if nLastInit then
-        --         DB.setValue(nodeEntry, "initresult", "number", nLastInit);
-        --         DB.setValue(nodeEntry, "initresult_d6", "number", nLastInit);
-        --     else
-        --         local nInitResult = rollRandomInitOrig(nInit, bADV);
-        --         DB.setValue(nodeEntry, "initresult", "number", nInitResult);
-        --         DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult);
-        --     end
-        -- end
-        --end
         Debug.console("NPC Init")
         -- it's an npc
         -- if grouping involving npcs is on
         -- if bOptPCVNPCINIT then --or (sOptInitGrouping == "npc" or sOptInitGrouping == "both") then
         -- roll without mods
-        nInitResult = rollRandomInitOrig(0, bADV)
+        nInitResult = rollRandomInitNew(0)
         -- group init - apply init result to remaining NPCs
         applyInitResultToAllNPCs(nInitResult)
         -- set last init for comparison for ties and swapping
         NPC_LASTINIT = nInitResult
-        -- else
-        -- set nInit to 0 for disallowing mods
-        --consider for OSRIC zombies
-        local nInit = 0
-        -- for npcs we allow them to have custom initiative. Check for it
-        -- and set nInit.
+
         local nTotal = DB.getValue(nodeEntry, "initiative.total", 0)
     end
 
-    -- deal with ties when all initiative is grouped and ties are turned off
-    --if bOptPCVNPCINIT or (sOptInitGrouping == "both") then
-
-    -- init ties off
-    -- if not bOptInitTies then
-    --     -- this is to make sure we dont have same initiative
-    --     -- give the benefit to players.
-    --     if PC_LASTINIT == NPC_LASTINIT then
-    --         -- don't want 0 inits
-    --         if NPC_LASTINIT ~= 1 then
-    --             nInitResult = NPC_LASTINIT - 1;
-    --             applyInitResultToAllPCs(nInitResult);
-    --             PC_LASTINIT = nInitResult;
-    --         else
-    --             nInitResult = PC_LASTINIT + 1;
-    --             applyInitResultToAllNPCs(nInitResult);
-    --             NPC_LASTINIT = nInitResult;
-    --         end
-    --     end
-    -- end
-
     -- init grouping swap
-    if bOptInitGroupingSwap then
+    if bOsricInitiativeSwap then
         Debug.console("SWAP!")
         --if bOptPCVNPCINIT then --or (sOptInitGrouping ~= "neither") then
         applyInitResultToAllPCs(NPC_LASTINIT)
@@ -246,8 +120,8 @@ function applyInitResultToAllNPCs(nInitResult)
 
             if nInit == 99 then
                 -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
-                DB.setValue(v, "initresult", "number", 99)
-                DB.setValue(v, "initresult_d6", "number", 99)
+                DB.setValue(v, "initresult", "number", 10)
+                DB.setValue(v, "initresult_d6", "number", 10)
             else
                 -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
                 DB.setValue(v, "initresult", "number", nInitResult)
@@ -261,89 +135,7 @@ function applyInitResultToAllNPCs(nInitResult)
     end
 end
 
--- maybe remove since there is no individual init in AD&D or OSRIC
--- function applyIndividualInit(nTotal, rSource)
---     local nodeEntry = ActorManager.getCTNode(rSource);
-
---     -- just set both of these values regardless of initiative die used, so we don't have to mod other places where initresult is displayed
---     DB.setValue(nodeEntry, "initresult", "number", nTotal);
---     DB.setValue(nodeEntry, "initresult_d6", "number", nTotal);
---     -- set init rolled
---     DB.setValue(nodeEntry, "initrolled", "number", 1);
--- end
-
---
--- i don't think this is needed, since there should only be low to high, now
--- AD&D Style ordering (low to high initiative)
---
--- function sortfuncADnDNew(node2, node1)
---     local sOptInitOrdering = OptionsManager.getOption("initiativeOrdering");
---     local bHost = Session.IsHost;
---     local sOptCTSI = OptionsManager.getOption("CTSI");
-
---     local sFaction1 = DB.getValue(node1, "friendfoe", "");
---     local sFaction2 = DB.getValue(node2, "friendfoe", "");
-
---     local bShowInit1 = bHost or ((sOptCTSI == "friend") and (sFaction1 == "friend")) or (sOptCTSI == "on");
---     local bShowInit2 = bHost or ((sOptCTSI == "friend") and (sFaction2 == "friend")) or (sOptCTSI == "on");
-
---     if bShowInit1 ~= bShowInit2 then
---       if bShowInit1 then
---         return true;
---       elseif bShowInit2 then
---         return false;
---       end
---     else
---       if bShowInit1 then
---         local nValue1 = DB.getValue(node1, "initresult", 0);
---         local nValue2 = DB.getValue(node2, "initresult", 0);
---         if nValue1 ~= nValue2 then
---             if sOptInitOrdering == "ascending" then
---                 return nValue1 > nValue2;
---             else
---                 return nValue1 < nValue2;
---             end
---         end
-
---         nValue1 = DB.getValue(node1, "init", 0);
---         nValue2 = DB.getValue(node2, "init", 0);
---         if nValue1 ~= nValue2 then
---             if sOptInitOrdering == "ascending" then
---                 return nValue1 > nValue2;
---             else
---                 return nValue1 < nValue2;
---             end
---         end
---       else
---         if sFaction1 ~= sFaction2 then
---           if sFaction1 == "friend" then
---             return true;
---           elseif sFaction2 == "friend" then
---             return false;
---           end
---         end
---       end
---     end
-
---     local sValue1 = DB.getValue(node1, "name", "");
---     local sValue2 = DB.getValue(node2, "name", "");
-
---     if sOptInitOrdering == "ascending" then
---         if sValue1 ~= sValue2 then
---             return sValue1 < sValue2;
---         end
-
---         return node1.getNodeName() < node2.getNodeName();
---     else
---         if sValue1 ~= sValue2 then
---             return sValue2 < sValue1;
---         end
-
---         return node2.getNodeName() < node1.getNodeName();
---     end
--- end
-
-function handleInitiativeChange(msgOOB)
+function handleInitiativeChangeNew(msgOOB)
     local nodeCT = DB.findNode(msgOOB.sCTRecord)
 
     if nodeCT then
@@ -364,7 +156,7 @@ function resetInitNew()
 end
 
 function onRoundStartNew(nCurrent)
-    --local bOptRoundStartResetInit = (OptionsManager.getOption("roundStartResetInit") == 'on');
+    local bOptAutoNpcInitiative = (OptionsManager.getOption("autoNpcInitiative") == "on")
 
     PC_LASTINIT = 0
     NPC_LASTINIT = 0
@@ -376,15 +168,21 @@ function onRoundStartNew(nCurrent)
     --end
 
     if bOptAutoNpcInitiative then
-        -- if they have custom init then we use it.
-        local nInitResult = rollRandomInitOrig(nInit, bADV)
+        local nInitResult = rollRandomInitNew(0)
 
-        DB.setValue(nodeEntry, "initresult", "number", nInitResult)
-        DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult)
+        local bOsricInitiativeSwap = (OptionsManager.getOption("useOsricInitiativeSwap") == "on")
+
+        if bOsricInitiativeSwap then
+            applyInitResultToAllPCs(nInitResult)
+        else
+            applyInitResultToAllNPCs(nInitResult)
+        end
+
+        -- DB.setValue(nodeEntry, "initresult", "number", nInitResult)
+        -- DB.setValue(nodeEntry, "initresult_d6", "number", nInitResult)
     end
 end
 
---decide what to do with this
 function resetCombatantInit(nodeCT)
     DB.setValue(nodeCT, "initresult", "number", 0)
     DB.setValue(nodeCT, "initresult_d6", "number", 0)

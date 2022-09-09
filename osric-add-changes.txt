@@ -1,4 +1,4 @@
-Group all initiative (forced)
+group all initiative (forced)
 grouped init swap (option)
 assign init based on character who rolled (forced)
 remove critical hits (forcing/removing)
@@ -7,20 +7,38 @@ remove pc vs npc init (forced)
 encumbrance mandatory (forcing/removing)
 remove armor dp (forced)
 remove all initiative mods (forced)
+remove all surprise mods (forced)
 auto-reset initiative every round (forced)
-enable delay only for OSRIC (option)
+enable delay only for OSRIC (option), sets delayed actor's init to 7
 remove ability checks (forcing/removing) SEE BOTTOM
 remove kits (forced))
 make currency weight mandatory (forcing/removing)
 change label of auto npc initiative and switch to on/off only (forced)
 remove critical hit/fumble tables (forcing/removing)
 rename to AD&D 1e/OSRIC (forced)
+death's door thresholds
+	exactly 0 (AD&D)
+	0 thru -3 (AD&D)
+	0 thru -9 (OSRIC implied)
+
+	characters brought back to life receive a helpless effect
+	unconcious characters brought back to 1 or more hp receive a coma and a helpless effect
+
+** haven't done anything with spells, in terms of casting time but that would come next
 
 
-Xneed to deal with monsters that are automatically set to 99 initiative
-need to deal with 10 segment rounds
-deal with autonpcinitiative
+
+
+
+
+
+X need to deal with monsters that are automatically set to 99 initiative
+X need to deal with 10 segment rounds
+X get delay working
+X deal with autonpcinitiative
+X fix combat tracker sorting
 X need to deal with death's door
+
 need to bring useful changes into options and house rules mod
 
 
@@ -38,9 +56,7 @@ Forced defaults
 	remove kits
 	death's door always on
 
-Death's Door
-	characters brought back to life receive a helpless effect
-	unconcious characters brought back to 1 or more hp receive a helpless effect
+
 
 check if 2e base ruleset removes effects when wounds manually changed
 
@@ -49,6 +65,11 @@ add an ability check option of 3d6 to AD&D Options and House Rules
 
 
 IDEA: maybe we create an entirely new extension and pop a window on Core 1e that tells people that it's no longer being developed
+
+
+
+
+ROBLOX - WRITE A NOTE
 	
 	
 

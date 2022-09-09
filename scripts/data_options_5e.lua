@@ -54,7 +54,7 @@ function registerOptions()
         "option_header_combat",
         "option_label_autoNpcInitiative",
         "option_entry_cycler",
-        {labels = "option_val_off", values = "on", baselabel = "option_val_on", baseval = "on", default = "on"}
+        {labels = "option_val_off", values = "off", baselabel = "option_val_on", baseval = "on", default = "on"}
     )
 
     OptionsManager.registerOption2(

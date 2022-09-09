@@ -48,4 +48,30 @@
 			</script>
 		</label>
 	</template>
+
+	<template name="button_charinitdelay" merge="replace">
+		<buttoncontrol>
+			<icon normal="button_initdelay" pressed="button_initdelay_down" />
+			<script>
+				function action(draginfo)
+					local nodeChar = window.getDatabaseNode();
+					ActionInitManagerADND1e.delayActor(nodeChar);
+					return true;
+				end
+				
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+				
+				function onButtonPress(x,y)
+					return action();
+				end
+			</script>
+			<frame name="fielddark" offset="7,5,7,5" />
+			<stateframe>
+				<hover name="rowshade" offset="7,5,7,5" />
+			</stateframe>
+			<tooltip textres="char_initdelay_tooltip" />
+		</buttoncontrol>
+	</template>
 </root>

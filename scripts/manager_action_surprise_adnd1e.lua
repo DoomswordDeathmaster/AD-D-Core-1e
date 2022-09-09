@@ -1,19 +1,15 @@
 function onInit()
-    getRollOrig = ActionSurprise.getRoll
-    ActionSurprise.getRoll = getRollNew
+    --ActionSurprise.getRoll = getRollNew
+    ActionSurprise.performRoll = performRollNew
+end
+
+function performRollNew(draginfo, rActor, nTargetDC, bSecretRoll)
+    local rRoll = getRollNew(rActor, nTargetDC, bSecretRoll)
+
+    ActionsManager.performAction(draginfo, rActor, rRoll)
 end
 
 function getRollNew(rActor, nTargetDC, bSecretRoll)
-    --sOptSurpriseDie = OptionsManager.getOption("surpriseDie");
-
-    -- if sOptSurpriseDie == "d6" then
-    --     DataCommonADND.aDefaultSurpriseDice = {"d6"};
-    -- elseif sOptSurpriseDie == "d10" then
-    --     DataCommonADND.aDefaultSurpriseDice = {"d10"};
-    -- elseif sOptSurpriseDie == "d12" then
-    --     DataCommonADND.aDefaultSurpriseDice = {"d12"};
-    -- end
-
     DataCommonADND.aDefaultSurpriseDice = {"d6"}
 
     local rRoll = {}
@@ -49,10 +45,4 @@ function getSurpriseTarget(node)
     local nTotal = nBase + nMod + nTmpMod
 
     return nTotal
-end
-
-function performRoll(draginfo, rActor, nTargetDC, bSecretRoll)
-    local rRoll = getRollNew(rActor, nTargetDC, bSecretRoll)
-
-    ActionsManager.performAction(draginfo, rActor, rRoll)
 end
